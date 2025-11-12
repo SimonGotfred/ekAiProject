@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity
 
     public void onButton(View view) // initial start-button
     {
+
     }
 
     public void addButton(Option option)
