@@ -31,8 +31,11 @@ android {
 }
 
 dependencies {
-    compileOnly 'org.projectlombok:lombok:1.18.20'
-    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+    compileOnly libs.projectlombok.lombok
+    annotationProcessor libs.projectlombok.lombok
+
+    implementation libs.gson
+
     implementation libs.appcompat
     implementation libs.material
     implementation libs.activity

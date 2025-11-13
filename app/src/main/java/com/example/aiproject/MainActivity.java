@@ -7,9 +7,13 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.aiproject.ai.Response;
+import com.example.aiproject.ai.Service;
 import com.example.aiproject.game.GameEngine;
 import com.example.aiproject.game.Option;
 
+import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.activity.EdgeToEdge;
@@ -20,9 +24,11 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity
 {
+    private Service      service;
     private GameEngine   game;
     private TextView     textView;
     private LinearLayout optionView;
+    private ArrayList<Response> responses = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -36,16 +42,17 @@ public class MainActivity extends AppCompatActivity
             return insets;
         });
 
-        game       = new GameEngine(this);
-        textView   = findViewById(R.id.TextWindow);
         optionView = findViewById(R.id.OptionCont);
-
+        textView   = findViewById(R.id.TextWindow);
         textView.setTextSize(16);
+
+        service = new Service(this);
+        game    = new GameEngine(this);
     }
 
     public void onButton(View view) // initial start-button
     {
-
+        responses.add(service.prompt("Write a short story about an octopus disguised as a school teacher"));
     }
 
     public void addButton(Option option)
@@ -98,7 +105,6 @@ public class MainActivity extends AppCompatActivity
 
     public void addText(String str)
     {
-        String strM = getText();
         setText(getText() + "\n_______________________________\n\n" + str);
     }
 
