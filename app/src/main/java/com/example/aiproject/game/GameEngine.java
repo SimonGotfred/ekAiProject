@@ -1,17 +1,20 @@
 package com.example.aiproject.game;
 
-import android.content.Context;
+import com.example.aiproject.MainActivity;
+import com.example.aiproject.ai.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class GameEngine
 {
-    private final Context context;
+    private final MainActivity ui;
+    private final Service service;
 
-    public GameEngine(Context context)
+    public GameEngine(MainActivity mainActivity, Service service)
     {
-        this.context = context;
+        this.ui = mainActivity;
+        this.service = service;
     }
 
     public List<Option> listOptions()
