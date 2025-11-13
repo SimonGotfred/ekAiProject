@@ -11,6 +11,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -24,22 +25,23 @@ public class Service
     "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
 
     private final   URL          url;
-    private final   MainActivity main;
+    private final   MainActivity ui;
     @Getter private boolean      busy = false;
 
     private final ArrayList<Response> responses = new ArrayList<>(); // todo: custom list for responses
+    public  List<Response> getResponses() {return List.copyOf(responses);}
 
     public Service(MainActivity mainActivity)
     {
         try   {url = new URL(spec);}
         catch (MalformedURLException e) {throw new RuntimeException(e);}
-        this.main = mainActivity;
+        this.ui = mainActivity;
     }
 
     public Thread prompt(String prompt)
     {
         if (busy) return null;
-        busy = true; // block new requests during main thread
+        busy = true; // block new requests during ongoing request
 
         Thread thread = new Thread()
         {
@@ -70,11 +72,11 @@ public class Service
                     Response response = new Gson().fromJson(input, Response.class);
                     responses.add(response);
 
-                    main.runOnUiThread(() -> main.setText(response.getText()));
+                    ui.setText(response.getText());
                 }
                 catch (Exception e)
                 {
-                    main.setText(e.getMessage()); // todo: proper error handling
+                    ui.setText(e.getMessage()); // todo: proper error handling
                 }
                 finally
                 {

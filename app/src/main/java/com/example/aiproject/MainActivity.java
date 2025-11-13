@@ -43,15 +43,14 @@ public class MainActivity extends AppCompatActivity
 
         optionView = findViewById(R.id.OptionCont);
         textView   = findViewById(R.id.TextWindow);
-        //textView.setTextSize(16);
 
         service = new Service(this);
-        game    = new GameEngine(this);
+        game    = new GameEngine(this, service);
     }
 
     public void onButton(View view) // initial start-button
     {
-       service.prompt("Write a short story about an octopus disguised as a school teacher");
+       service.prompt("Write a short joke about AI or programming.");
     }
 
     public void addButton(Option option)
@@ -92,9 +91,14 @@ public class MainActivity extends AppCompatActivity
         addMultipleBtn(game.listOptions());
     }
 
+    public void clearText()
+    {
+        runOnUiThread(() -> textView.setText(""));
+    }
+
     public void setText(String str)
     {
-        textView.setText(str);
+        runOnUiThread(() -> textView.setText(str));
     }
 
     public String getText()
@@ -105,10 +109,5 @@ public class MainActivity extends AppCompatActivity
     public void addText(String str)
     {
         setText(getText() + "\n_______________________________\n\n" + str);
-    }
-
-    public void clearText()
-    {
-        textView.setText("");
     }
 }
