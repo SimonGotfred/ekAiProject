@@ -12,7 +12,6 @@ import com.example.aiproject.ai.Service;
 import com.example.aiproject.game.GameEngine;
 import com.example.aiproject.game.Option;
 
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import lombok.SneakyThrows;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -28,7 +28,6 @@ public class MainActivity extends AppCompatActivity
     private GameEngine   game;
     private TextView     textView;
     private LinearLayout optionView;
-    private ArrayList<Response> responses = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -44,7 +43,7 @@ public class MainActivity extends AppCompatActivity
 
         optionView = findViewById(R.id.OptionCont);
         textView   = findViewById(R.id.TextWindow);
-        textView.setTextSize(16);
+        //textView.setTextSize(16);
 
         service = new Service(this);
         game    = new GameEngine(this);
@@ -52,7 +51,7 @@ public class MainActivity extends AppCompatActivity
 
     public void onButton(View view) // initial start-button
     {
-        responses.add(service.prompt("Write a short story about an octopus disguised as a school teacher"));
+       service.prompt("Write a short story about an octopus disguised as a school teacher");
     }
 
     public void addButton(Option option)
@@ -95,7 +94,7 @@ public class MainActivity extends AppCompatActivity
 
     public void setText(String str)
     {
-        textView.setText(Html.fromHtml(str));
+        textView.setText(str);
     }
 
     public String getText()

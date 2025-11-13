@@ -10,6 +10,7 @@ import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -26,6 +27,8 @@ public class Service
     private final   MainActivity main;
     @Getter private boolean      busy = false;
 
+    private final ArrayList<Response> responses = new ArrayList<>(); // todo: custom list for responses
+
     public Service(MainActivity mainActivity)
     {
         try   {url = new URL(spec);}
@@ -33,17 +36,16 @@ public class Service
         this.main = mainActivity;
     }
 
-    public Response prompt(String prompt)
+    public Thread prompt(String prompt)
     {
         if (busy) return null;
         busy = true; // block new requests during main thread
 
-        final Response[] response = new Response[1];
-        Thread thread = new Thread(new Runnable()
+        Thread thread = new Thread()
         {
             @Override public void run()
             {
-                String body = "{\"contents\": [{\"parts\": [{\"text\": \""+prompt+"\"}]}]}";
+                String body = "{\"contents\": [{\"parts\": [{\"text\": \""+prompt+"\"}]}]}"; // todo: proper bodybuilding
                 HttpURLConnection connection = null;
 
                 try
@@ -65,31 +67,23 @@ public class Service
 
                     BufferedReader input = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 
-                    response[0] = new Gson().fromJson(input, Response.class);
+                    Response response = new Gson().fromJson(input, Response.class);
+                    responses.add(response);
 
-//                    StringBuilder response = new StringBuilder();
-//                    String responseLine = null;
-//                    while ((responseLine = br.readLine()) != null)
-//                    {
-//                        response.append(responseLine.trim());
-//                    }
-//                    JSONObject json = new JSONObject(response.toString());
-
-                    main.setText(response[0].getText());
+                    main.runOnUiThread(() -> main.setText(response.getText()));
                 }
                 catch (Exception e)
                 {
-                    main.setText(e.getMessage());
+                    main.setText(e.getMessage()); // todo: proper error handling
                 }
                 finally
                 {
                     if (connection != null) connection.disconnect();
-                    busy = false; // open for new requests after threat finishes
+                    busy = false; // open up for new requests after active threat finishes
                 }
             }
-        });
-
+        };
         thread.start();
-        return response[0];
+        return thread;
     }
 }
