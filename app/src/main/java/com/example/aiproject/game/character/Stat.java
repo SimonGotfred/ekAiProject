@@ -7,8 +7,14 @@ public enum Stat
     INTELLIGENCE,
     WILLPOWER,
 
-        // derived aptitudes:
+        // derived stats:
     VIGOR,
+    MAX_VIGOR,
     FATIGUE,
-    DEFENCE;
+    DEFENCE,
+
+        // damage types:
+    MELEE,
+    RANGED,
+    MAGIC;
 }

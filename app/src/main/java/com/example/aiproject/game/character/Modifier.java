@@ -1,13 +1,20 @@
 package com.example.aiproject.game.character;
 
+import com.example.aiproject.game.Dice;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter @Setter
 public class Modifier
 {
-    Stat stat;
-    int value;
+    private Stat stat;
+    private int value;
+    private Dice dice;
 
-    public Modifier(int value, Stat stat)
+    public int value()
     {
-        this.stat  = stat;
-        this.value = value;
+        if (dice == null) return value;
+        return dice.roll(value);
     }
 }

@@ -4,9 +4,13 @@ import android.content.Context;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
-public class Option extends Button
+import com.example.aiproject.game.character.Gear;
+
+public class Option extends androidx.appcompat.widget.AppCompatButton
 {
-    public Option(Context context)
+    final Gear gear;
+
+    public Option(Context context, Gear gear)
     {
         super(context);
         this.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
@@ -17,5 +21,8 @@ public class Option extends Button
         int padP = (int)(0*pad);
         this.setMinHeight((int)(1*pad));
         this.setPadding(padP,padP,padP,padP);
+
+        this.gear = gear;
+        this.setText(this.gear.getName());
     }
 }

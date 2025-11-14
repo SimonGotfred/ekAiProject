@@ -1,0 +1,131 @@
+[
+  {
+    "name": "Adventurer",
+    "description": "A man on an adventure.",
+    "athletics": 3, "intelligence": 3, "willpower": 3,
+
+    "gear":
+    [
+      {
+        "name": "Rusty Sword",
+        "aptitude": "ATHLETICS",
+        "modifiers":
+        [
+          {
+            "stat": "FATIGUE",
+            "value": 1,
+            "dice": "d4"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Amateur Guard",
+    "description": "A simple guard with shabby equipment.",
+    "athletics": 3, "intelligence": 3, "willpower": 3,
+
+    "gear":
+    [
+      {
+        "name": "Dull Spear",
+        "aptitude": "ATHLETICS",
+        "modifiers":
+        [
+          {
+            "stat": "FATIGUE",
+            "value": 1,
+            "dice": "d4"
+          }
+        ]
+      },
+      {
+      "name": "Cumbersome Chainmail",
+      "modifiers":
+      [
+        {
+          "stat": "DEFENCE",
+          "value": 2
+        },
+        {
+          "stat": "ATHLETICS",
+          "value": -1
+        }
+      ]
+    }
+    ]
+  },
+  {
+    "name": "Novice Sorcerer",
+    "description": "A man studying the fabric of what makes the world.",
+    "athletics": 1, "intelligence": 3, "willpower": 4,
+
+    "gear":
+    [
+      {
+        "name": "Flame Spell",
+        "aptitude": "WILLPOWER",
+        "modifiers":
+        [
+          {
+            "stat": "FATIGUE",
+            "value": 2,
+            "dice": "d4"
+          }
+        ]
+      },
+      {
+        "name": "Spellbook",
+        "modifiers":
+        [
+          {
+            "stat": "WILLPOWER",
+            "value": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Wolf",
+    "description": "A feral wolf, with dark fur.",
+    "athletics": 3, "intelligence": 2, "willpower": 2,
+
+    "gear":
+    [
+      {
+        "name": "Claws",
+        "aptitude": "ATHLETICS",
+        "modifiers":
+        [
+          {
+            "stat": "FATIGUE",
+            "value": 1,
+            "dice": "d4"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Bear",
+    "description": "A feral bear, with brown fur.",
+    "athletics": 5, "intelligence": 2, "willpower": 2,
+
+    "gear":
+    [
+      {
+        "name": "Claws",
+        "aptitude": "ATHLETICS",
+        "modifiers":
+        [
+          {
+            "stat": "FATIGUE",
+            "value": 2,
+            "dice": "d4"
+          }
+        ]
+      }
+    ]
+  }
+]
