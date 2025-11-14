@@ -21,7 +21,7 @@ public class Gear
         return aptitude != null;
     }
 
-    public String use(CharacterBase user, CharacterBase opponent)
+    public String use(Character user, Character opponent)
     {
         switch (aptitude)
         {
@@ -33,7 +33,7 @@ public class Gear
         }
     }
 
-    private String attack(CharacterBase user, CharacterBase opponent, Stat attackType)
+    private String attack(Character user, Character opponent, Stat attackType)
     {
         StringBuilder str = new StringBuilder();
         int roll = user.roll(aptitude);

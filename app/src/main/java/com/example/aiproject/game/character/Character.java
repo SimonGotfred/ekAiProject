@@ -9,15 +9,15 @@ import lombok.Getter;
 
 import static com.example.aiproject.game.character.Stat.*;
 
-public class CharacterBase
+public class Character
 {
     @Getter protected String name, description;
     @Getter protected List<Gear> gear = new ArrayList<>();
     protected int athletics, intelligence, willpower, fatigue;
 
-    public CharacterBase(){}
+    public Character() {}
 
-    public CharacterBase(CharacterBase base)
+    public Character(Character base)
     {
         this.name         = base.name;
         this.description  = base.description;
@@ -50,7 +50,7 @@ public class CharacterBase
         return getStat(aptitude) + resolveBonus(aptitude) + Dice.d4.roll(2) - getStat(FATIGUE);
     }
 
-    public String use(Gear gear, CharacterBase adversary)
+    public String use(Gear gear, Character adversary)
     {
         return gear.use(this, adversary);
     }
