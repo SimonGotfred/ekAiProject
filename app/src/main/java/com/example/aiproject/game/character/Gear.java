@@ -13,19 +13,23 @@ public class Gear
     private String         name;
     private Stat           aptitude;
     private List<Modifier> modifiers = new ArrayList<>();
-    private boolean oneUse = false;
-    private boolean loot   = true;
+    private short          duration  = 0;
+    private boolean        loot      = false;
 
-    public boolean isAction()
+    public Gear(String name, Modifier... modifier)
     {
-        return aptitude != null;
+        this.name = name;
+        this.modifiers = List.of(modifier);
+        duration       = -1;
     }
+
+    public boolean isAction() {return aptitude != null;}
 
     public String use(Character user, Character opponent)
     {
         switch (aptitude)
         {
-            case VIGOR:        user.applyModifier(modifiers.get(0)); return "";
+            case VIGOR:        user.increase(modifiers.toArray(new Modifier[]{})); return "";
             case ATHLETICS:    return attack(user, opponent, MELEE);
             case INTELLIGENCE: return attack(user, opponent, RANGED);
             case WILLPOWER:    return attack(user, opponent, MAGIC);
@@ -44,8 +48,12 @@ public class Gear
         if (roll >= opponent.getStat(DEFENCE))
         {
             int damage = modifiers.get(0).getValue() + user.getStat(aptitude);
-            opponent.increaseStat(FATIGUE, damage);
-            str.append("successfully dealing " + damage + " damage. Bringing "  + opponent.name + " to " + opponent.getStat(VIGOR) + " health.");
+            opponent.increase(FATIGUE, damage);
+
+            str.append("dealing " + damage + " damage. ");
+
+            if (opponent.getStat(VIGOR) < 1) str.append(" Finally slaying " + opponent.name);
+            else str.append("Bringing "  + opponent.name + " to " + opponent.getStat(VIGOR) + '/' + opponent.getStat(MAX_VIGOR) + " health.");
         }
         else
         {

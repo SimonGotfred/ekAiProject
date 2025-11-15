@@ -2,8 +2,12 @@
   {
     "name": "Adventurer",
     "description": "A man on an adventure.",
-    "athletics": 3, "intelligence": 3, "willpower": 3,
-
+    "stats":
+    {
+      "ATHLETICS":    3,
+      "INTELLIGENCE": 3,
+      "WILLPOWER":    3
+    },
     "gear":
     [
       {
@@ -23,8 +27,12 @@
   {
     "name": "Amateur Guard",
     "description": "A simple guard with shabby equipment.",
-    "athletics": 3, "intelligence": 3, "willpower": 3,
-
+    "stats":
+    {
+      "ATHLETICS":    3,
+      "INTELLIGENCE": 3,
+      "WILLPOWER":    3
+    },
     "gear":
     [
       {
@@ -58,8 +66,12 @@
   {
     "name": "Novice Sorcerer",
     "description": "A man studying the fabric of what makes the world.",
-    "athletics": 1, "intelligence": 3, "willpower": 4,
-
+    "stats":
+    {
+      "ATHLETICS":    1,
+      "INTELLIGENCE": 3,
+      "WILLPOWER":    4
+    },
     "gear":
     [
       {
@@ -81,6 +93,10 @@
           {
             "stat": "WILLPOWER",
             "value": 1
+          },
+          {
+            "stat": "INTELLIGENCE",
+            "value": -1
           }
         ]
       }
@@ -89,8 +105,12 @@
   {
     "name": "Wolf",
     "description": "A feral wolf, with dark fur.",
-    "athletics": 3, "intelligence": 2, "willpower": 2,
-
+    "stats":
+    {
+      "ATHLETICS":    3,
+      "INTELLIGENCE": 2,
+      "WILLPOWER":    2
+    },
     "gear":
     [
       {
@@ -110,8 +130,12 @@
   {
     "name": "Bear",
     "description": "A feral bear, with brown fur.",
-    "athletics": 5, "intelligence": 2, "willpower": 2,
-
+    "stats":
+    {
+      "ATHLETICS":    5,
+      "INTELLIGENCE": 2,
+      "WILLPOWER":    3
+    },
     "gear":
     [
       {

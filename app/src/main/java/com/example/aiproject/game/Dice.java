@@ -22,8 +22,8 @@ public enum Dice
 
     public int roll(int times)
     {
-        if (times<1) return 0;
-        return this.roll() + this.roll(times-1);
+        if (times < 1) return 0;
+        return this.roll() + this.roll(times - 1);
     }
 
     public boolean against(int challenge) {return this.roll() > challenge;}

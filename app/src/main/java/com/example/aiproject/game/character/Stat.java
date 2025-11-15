@@ -3,18 +3,24 @@ package com.example.aiproject.game.character;
 public enum Stat
 {
         // base aptitudes:
-    ATHLETICS,
-    INTELLIGENCE,
-    WILLPOWER,
+    ATHLETICS   ("💪"),
+    INTELLIGENCE("👁️"),
+    WILLPOWER   ("🧠"),
 
         // derived stats:
-    VIGOR,
-    MAX_VIGOR,
-    FATIGUE,
-    DEFENCE,
+    VIGOR    ("❤️"),
+    MAX_VIGOR("💖"),
+    FATIGUE  ("💔"),
+    DEFENCE  ("🛡️"),
 
         // damage types:
-    MELEE,
-    RANGED,
-    MAGIC;
+    MELEE    ("🗡️"),
+    RANGED   ("🏹"),
+    MAGIC    ("✨"),
+
+    GOLD     ("💰");
+
+    final String icon;
+
+    Stat(String icon){this.icon=icon;}
 }

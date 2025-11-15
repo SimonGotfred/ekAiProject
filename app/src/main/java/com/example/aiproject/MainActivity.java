@@ -5,6 +5,7 @@ import android.text.Html;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.example.aiproject.ai.Response;
@@ -50,18 +51,13 @@ public class MainActivity extends AppCompatActivity
 
     public void onButton(View view) // initial start-button
     {
-       service.prompt("Write a short joke about AI or programming.");
+       game.start();
     }
 
     public void addButton(Option option)
     {
         // add button functionality
-        option.setOnClickListener(v ->
-        {
-            game.submitOption(option);
-            setText(game.getText());
-            refreshButtons();
-        });
+        option.setOnClickListener(v -> game.submitOption(option));
 
         // add button to the view
         optionView.addView(option);
@@ -98,16 +94,23 @@ public class MainActivity extends AppCompatActivity
 
     public void setText(String str)
     {
-        runOnUiThread(() -> textView.setText(str));
+        runOnUiThread(() -> textView.setText(Html.fromHtml(str)));
     }
 
     public String getText()
     {
-        return (String)textView.getText();
+        return Html.escapeHtml(textView.getText());
     }
 
-    public void addText(String str)
+    public void updateText(String str)
     {
-        setText(getText() + "\n_______________________________\n\n" + str);
+        runOnUiThread(() ->
+        {
+            // todo buffer text
+            setText(getText() + "<p>_________________________________________\n" + game.writeStats() + "</p><p>" + str + "</p>");
+            refreshButtons();
+            ScrollView s = findViewById(R.id.TextScroll);
+            s.setScrollY(textView.getHeight()*2); //.scrollTo(0, textView.getHeight())
+        });
     }
 }

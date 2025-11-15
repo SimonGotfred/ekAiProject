@@ -72,7 +72,7 @@ public class Service
                     Response response = new Gson().fromJson(input, Response.class);
                     responses.add(response);
 
-                    ui.setText(response.getText());
+                    ui.updateText(response.getText());
                 }
                 catch (Exception e)
                 {
