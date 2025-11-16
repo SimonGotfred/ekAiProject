@@ -20,7 +20,8 @@ public enum Dice
     public int roll() {return roller.nextInt(value)+1;}
     public int roll(int times)
     {
-        if (times < 1) return 0;
+        if (times == 0) return 0;
+        if (times < 0) return -this.roll(-times);
         return this.roll() + this.roll(times - 1);
     }
 

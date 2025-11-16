@@ -55,9 +55,9 @@ public class Character
         switch (stat)
         {
             case VIGOR:     return Math.max(getStat(MAX_VIGOR) - getStat(FATIGUE), 0);
-            case MAX_VIGOR: return Math.max(5*(rawVigor()   + resolveBonus(ATHLETICS, WILLPOWER, VIGOR)),     5);
-            case DEFENCE:   return Math.max(2*(rawDefence() + resolveBonus(ATHLETICS, INTELLIGENCE, DEFENCE)),0);
-            default:        return          rawStat(stat) + resolveBonus(stat);
+            case MAX_VIGOR: return Math.max(5*(rawVigor()   + resolveBonus(ATHLETICS, WILLPOWER, MAX_VIGOR)), 5);
+            case DEFENCE:   return Math.max(5+(rawDefence() + resolveBonus(ATHLETICS, INTELLIGENCE, DEFENCE)),5);
+            default:        return             rawStat(stat)+ resolveBonus(stat);
         }
     }
 
@@ -70,16 +70,20 @@ public class Character
         {
             for (Modifier mod : gear.getModifiers())
             {
-                if (statList.contains(mod.getStat())) bonus += mod.getRolls();
+                if (statList.contains(mod.getStat())) bonus += mod.getModifier();
             }
         }
         return bonus;
     }
 
-    public void increase(Stat aptitude, int amount) {stats.replace(aptitude, Math.max(rawStat(aptitude)+amount,0));}
     public void decrease(Stat aptitude, int amount) {increase(aptitude, -amount);}
-    public void increase(Stat aptitude)             {increase(aptitude,1);}
     public void decrease(Stat aptitude)             {decrease(aptitude,1);}
+    public void increase(Stat aptitude)             {increase(aptitude,1);}
+    public void increase(Stat aptitude, int amount)
+    {
+        if (aptitude.equals(VIGOR)) decrease(FATIGUE,amount);
+        stats.replace(aptitude, Math.max(rawStat(aptitude)+amount,0));
+    }
 
     public void increase(Modifier... modifier) {for (Modifier m : modifier) increase(m.getStat(), m.rollValue());}
     public void apply(Modifier... modifier)    {this.add(new Gear("Condition", modifier));}
@@ -90,7 +94,7 @@ public class Character
     {
         switch (stat)
         {
-            case VIGOR: return stat.icon + getStat(VIGOR) + '/' + getStat(MAX_VIGOR);
+            case VIGOR: return MAX_VIGOR.icon + getStat(VIGOR) + '/' + getStat(MAX_VIGOR);
             case GOLD:  return stat.icon + getStat(stat);
             default:    return getStat(stat) + stat.icon;
         }

@@ -21,6 +21,45 @@
             "dice": "d4"
           }
         ]
+      },
+      {
+        "name": "Health Potion",
+        "aptitude": "VIGOR",
+        "duration": 1,
+        "modifiers":
+        [
+          {
+            "stat": "VIGOR",
+            "rolls": 2,
+            "dice": "d4",
+            "modifier": 4
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Goblin",
+    "description": "A scrawny goblin with an improvised weapon.",
+    "stats":
+    {
+      "ATHLETICS":    3,
+      "INTELLIGENCE": 3,
+      "WILLPOWER":    2
+    },
+    "gear":
+    [
+      {
+        "name": "club",
+        "aptitude": "ATHLETICS",
+        "modifiers":
+        [
+          {
+            "stat": "MELEE",
+            "rolls": 1,
+            "dice": "d8"
+          }
+        ]
       }
     ]
   },
@@ -48,19 +87,19 @@
         ]
       },
       {
-      "name": "Cumbersome Chainmail",
-      "modifiers":
-      [
-        {
-          "stat": "DEFENCE",
-          "modifier": 2
-        },
-        {
-          "stat": "ATHLETICS",
-          "modifier": -1
-        }
-      ]
-    }
+        "name": "Cumbersome Chainmail",
+        "modifiers":
+        [
+          {
+            "stat": "DEFENCE",
+            "modifier": 2
+          },
+          {
+            "stat": "ATHLETICS",
+            "modifier": -1
+          }
+        ]
+      }
     ]
   },
   {
@@ -81,6 +120,7 @@
         [
           {
             "stat": "MAGIC",
+            "rolls": 1,
             "dice": "d10"
           }
         ]
@@ -102,18 +142,18 @@
     ]
   },
   {
-    "name": "Wolf",
-    "description": "A feral wolf, with dark fur.",
+    "name": "Large Rat",
+    "description": "A rabid rat, the size of a smaller dog.",
     "stats":
     {
-      "ATHLETICS":    3,
-      "INTELLIGENCE": 2,
-      "WILLPOWER":    2
+      "ATHLETICS":    2,
+      "INTELLIGENCE": 1,
+      "WILLPOWER":    1
     },
     "gear":
     [
       {
-        "name": "Claws",
+        "name": "Bite",
         "aptitude": "ATHLETICS",
         "modifiers":
         [
@@ -127,11 +167,36 @@
     ]
   },
   {
+    "name": "Wolf",
+    "description": "A feral wolf, with dark fur.",
+    "stats":
+    {
+      "ATHLETICS":    2,
+      "INTELLIGENCE": 3,
+      "WILLPOWER":    2
+    },
+    "gear":
+    [
+      {
+        "name": "Claws",
+        "aptitude": "ATHLETICS",
+        "modifiers":
+        [
+          {
+            "stat": "MELEE",
+            "rolls": 2,
+            "dice": "d4"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "name": "Bear",
     "description": "A feral bear, with brown fur.",
     "stats":
     {
-      "ATHLETICS":    5,
+      "ATHLETICS":    4,
       "INTELLIGENCE": 2,
       "WILLPOWER":    3
     },
@@ -145,7 +210,8 @@
           {
             "stat": "MELEE",
             "rolls": 2,
-            "dice": "d6"
+            "dice": "d6",
+            "modifier": 2
           }
         ]
       }

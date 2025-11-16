@@ -71,6 +71,7 @@ public class Gear
 
             opponent.increase(FATIGUE, damage);
 
+            dice+=" ≻ " + damage + FATIGUE.icon;
             addText("dealing %d damage and ",damage);
 
             if (opponent.getStat(VIGOR) < 1) addText("finally slaying %s",opponent.name);
@@ -98,13 +99,16 @@ public class Gear
 
         user.increase(modifiers.toArray(new Modifier[]{}));
 
+        turn.setOutcome(text.toString());
+        turn.setDiceThrow(result());
+
         return turn;
     }
 
     private String result()
     {
         String text = "";
-        for (Modifier modifier : modifiers) text+=(modifier.result());
+        for (Modifier modifier : modifiers) text+=(modifier.result(false));
         return text.trim();
     }
 

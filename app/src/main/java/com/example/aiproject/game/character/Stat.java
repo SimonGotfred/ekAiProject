@@ -8,8 +8,8 @@ public enum Stat
     WILLPOWER   ("🧠"),
 
         // derived stats:
-    VIGOR    ("❤️"),
-    MAX_VIGOR("💖"),
+    VIGOR    ("💖"),
+    MAX_VIGOR("❤️"),
     FATIGUE  ("💔"),
     DEFENCE  ("🛡️"),
 
