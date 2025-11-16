@@ -1,11 +1,13 @@
 package com.example.aiproject.game.character;
 
 import com.example.aiproject.game.Dice;
+import com.example.aiproject.game.RandomSuite;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import lombok.Getter;
 
@@ -26,10 +28,22 @@ public class Character
         this.stats        . put(FATIGUE,0);
     }
 
+    public Gear   act(){return RandomSuite.oneOf(this.getActions());}
+    public String act(Character adversary)
+    {
+        return act().use(this, adversary); // todo: catch if no gear
+    }
+
     public int roll(Stat aptitude)   {return getStat(aptitude) + resolveBonus(aptitude) + Dice.d4.roll(2) - getStat(FATIGUE);}
 
     public String use(Gear gear, Character adversary) {return gear.use(this, adversary);}
     public String use(Gear gear)                      {return gear.use(this, this);}
+
+    public List<Gear> getActions(){return gear.stream().filter(Gear::isAction).collect(Collectors.toList());}
+
+    public boolean isAlive()         {return getStat(VIGOR) > 0;}
+    public boolean isDead()          {return !isAlive();}
+    public boolean isArmored()       {return resolveBonus(DEFENCE) > 0;}
 
     protected int rawStat(Stat stat) {return Optional.ofNullable(stats.getOrDefault(stat, 0)).orElse(0);}
     protected int rawDefence()       {return rawStat(ATHLETICS) + rawStat(INTELLIGENCE);}
@@ -46,14 +60,13 @@ public class Character
         }
     }
 
-    public int resolveBonus(Stat... stats)
+    public int resolveBonus(Stat... stats) // todo: beautify
     {
         int bonus = 0;
         List<Stat> statList = List.of(stats);
         if(statList.isEmpty()) return bonus;
         for (Gear gear : gear)
         {
-            if (gear.isAction()) continue;
             for (Modifier mod : gear.getModifiers())
             {
                 if (statList.contains(mod.getStat())) bonus += mod.getValue();
@@ -67,7 +80,7 @@ public class Character
     public void increase(Stat aptitude)             {increase(aptitude,1);}
     public void decrease(Stat aptitude)             {decrease(aptitude,1);}
 
-    public void increase(Modifier... modifier) {for (Modifier m : modifier) increase(m.getStat(), m.value());}
+    public void increase(Modifier... modifier) {for (Modifier m : modifier) increase(m.getStat(), m.rollValue());}
     public void apply(Modifier... modifier)    {this.add(new Gear("Condition", modifier));}
     public void add(Gear... gear)              {this.gear.addAll(List.of(gear));}
     public void remove(Gear... gear)           {this.gear.removeAll(List.of(gear));}
@@ -77,7 +90,8 @@ public class Character
         switch (stat)
         {
             case VIGOR: return stat.icon + getStat(VIGOR) + '/' + getStat(MAX_VIGOR);
-            default:    return stat.icon + getStat(stat);
+            case GOLD:  return stat.icon + getStat(stat);
+            default:    return getStat(stat) + stat.icon;
         }
     }
 }

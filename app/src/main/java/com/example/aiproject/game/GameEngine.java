@@ -21,9 +21,14 @@ public class GameEngine
     private final Service service;
 
     private final StringBuilder text = new StringBuilder();
+    private final String promptInstructions =
+            "Dramatically describe how the following scene play out in 2-4 sentences using present tense, "
+          + "always refer to the player as 'you', and do NOT mention specific numbers or stats:\n";
 
     private final List<Character> templates;
     private final List<Gear>      gearLib = new ArrayList<>();
+
+    private final Gear            proceed = new Gear("Proceed");
 
     private List<String> turns = new ArrayList<>(); // todo
 
@@ -43,26 +48,39 @@ public class GameEngine
 
     public void start()
     {
-        service.prompt("Describe the following scene in 4 sentences: " + "You (" + player.getDescription() + ") enter a dungeon and "
-                               + "encounter a " + adversary.getName() + ", bent on fighting you.");
+        service.prompt(promptInstructions + player.getName() + " enters a dungeon and encounters a "
+                               + adversary.getName() + ", bent on fighting them.");
     }
 
     public List<Option> listOptions()
     {
         List<Option> options = new ArrayList<>();
-
-        for (Gear gear : player.getGear())
-        {
-            options.add(new Option(ui, gear));
-        }
-
+        if (adversary.isDead()) options.add(new Option(ui, proceed));
+        else for (Gear gear : player.getActions()) {options.add(new Option(ui, gear));}
         return options;
     }
 
     public void submitOption(Option option) // todo return numerics
     {
-        String result = option.gear.use(player,adversary);
-        service.prompt("Describe the following scene in 2 sentences: " + result);
+        try
+        {
+            text.setLength(0);
+            if (option.gear.equals(proceed)) resolveTravel(option.gear);
+            else resolveCombat(option.gear);
+            service.prompt(promptInstructions + text);
+        }
+        catch (Exception e) {ui.newText(e.getMessage());}
+    }
+
+    public void resolveCombat(Gear gear)
+    {
+        text.append(gear.use(player, adversary));
+        if (adversary.isAlive()) text.append("\nMeanwhile ").append(adversary.act(player));
+    }
+
+    public void resolveTravel(Gear gear)
+    {
+
     }
 
     public String getText()
@@ -75,7 +93,9 @@ public class GameEngine
     public String writeStats(Stat... stats)
     {
         text.setLength(0);
-        for (Stat stat : stats) {text.append("\t\t").append(player.writeStat(stat));}
+        text.append("<p>\t\t\t");
+        for (Stat stat : stats) {text.append(player.writeStat(stat)).append("\t\t");}
+        text.append("\n_________________________________________</p>");
         return text.toString();
     }
 }

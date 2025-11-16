@@ -44,7 +44,6 @@
                 android:id="@+id/TextWindow"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Hello World!"
                 android:textColor="@android:color/black"
                 android:textSize="20sp" />
         </LinearLayout>
@@ -81,7 +80,7 @@
                 android:minHeight="48dp"
                 android:onClick="onButton"
                 android:padding="8dp"
-                android:text="Button"
+                android:text="Start Game"
                 android:textSize="20sp" />
         </LinearLayout>
     </ScrollView>

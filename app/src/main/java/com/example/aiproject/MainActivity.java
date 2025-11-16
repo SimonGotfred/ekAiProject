@@ -8,12 +8,10 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.example.aiproject.ai.Response;
 import com.example.aiproject.ai.Service;
 import com.example.aiproject.game.GameEngine;
 import com.example.aiproject.game.Option;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import androidx.activity.EdgeToEdge;
@@ -21,13 +19,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import lombok.SneakyThrows;
 
 public class MainActivity extends AppCompatActivity
 {
     private Service      service;
     private GameEngine   game;
     private TextView     textView;
+    private ScrollView   textScroll;
     private LinearLayout optionView;
 
     @Override
@@ -44,22 +42,53 @@ public class MainActivity extends AppCompatActivity
 
         optionView = findViewById(R.id.OptionCont);
         textView   = findViewById(R.id.TextWindow);
+        textScroll = findViewById(R.id.TextScroll);
 
         service = new Service(this);
         game    = new GameEngine(this, service);
     }
 
+    public void newText(String text)
+    {
+        setText(game.writeStats() + "<p>" + text + "</p>");
+    }
+
+    public void addText(String text)
+    {
+        setText(getText() + game.writeStats() + "<p>" + text + "</p>");
+    }
+
+    private void setText(String text)
+    {
+        runOnUiThread(() -> {textView.setText(Html.fromHtml(text));refreshButtons();});
+    }
+
+    public void clearText()
+    {
+        runOnUiThread(() -> textView.setText(""));
+    }
+
+    public String getText()
+    {
+        return Html.escapeHtml(textView.getText());
+    }
+
     public void onButton(View view) // initial start-button
     {
-       game.start();
+        clearButtons();
+        game.start();
     }
 
     public void addButton(Option option)
     {
         // add button functionality
-        option.setOnClickListener(v -> game.submitOption(option));
+        option.setOnClickListener(v ->
+        {
+            clearButtons();
+            game.submitOption(option);
+        });
 
-        // add button to the view
+        // add button to the ui
         optionView.addView(option);
     }
 
@@ -71,46 +100,19 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void removeButton(Button btn)
-    {
-        optionView.removeView(btn);
-    }
-
-    public void removeAllBtn()
-    {
-        optionView.removeAllViews();
-    }
-
     public void refreshButtons()
     {
-        removeAllBtn();
+        clearButtons();
         addMultipleBtn(game.listOptions());
     }
 
-    public void clearText()
+    public void removeButton(Button button)
     {
-        runOnUiThread(() -> textView.setText(""));
+        optionView.removeView(button);
     }
 
-    public void setText(String str)
+    public void clearButtons()
     {
-        runOnUiThread(() -> textView.setText(Html.fromHtml(str)));
-    }
-
-    public String getText()
-    {
-        return Html.escapeHtml(textView.getText());
-    }
-
-    public void updateText(String str)
-    {
-        runOnUiThread(() ->
-        {
-            // todo buffer text
-            setText(getText() + "<p>_________________________________________\n" + game.writeStats() + "</p><p>" + str + "</p>");
-            refreshButtons();
-            ScrollView s = findViewById(R.id.TextScroll);
-            s.setScrollY(textView.getHeight()*2); //.scrollTo(0, textView.getHeight())
-        });
+        optionView.removeAllViews();
     }
 }

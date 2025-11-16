@@ -1,6 +1,6 @@
 [
   {
-    "name": "Adventurer",
+    "name": "The Player",
     "description": "A man on an adventure.",
     "stats":
     {
@@ -16,7 +16,7 @@
         "modifiers":
         [
           {
-            "stat": "FATIGUE",
+            "stat": "MELEE",
             "value": 1,
             "dice": "d4"
           }
@@ -41,7 +41,7 @@
         "modifiers":
         [
           {
-            "stat": "FATIGUE",
+            "stat": "MELEE",
             "value": 1,
             "dice": "d4"
           }
@@ -80,9 +80,9 @@
         "modifiers":
         [
           {
-            "stat": "FATIGUE",
-            "value": 2,
-            "dice": "d4"
+            "stat": "MAGIC",
+            "value": 1,
+            "dice": "d8"
           }
         ]
       },
@@ -119,7 +119,7 @@
         "modifiers":
         [
           {
-            "stat": "FATIGUE",
+            "stat": "MELEE",
             "value": 1,
             "dice": "d4"
           }
@@ -144,7 +144,7 @@
         "modifiers":
         [
           {
-            "stat": "FATIGUE",
+            "stat": "MELEE",
             "value": 2,
             "dice": "d4"
           }
