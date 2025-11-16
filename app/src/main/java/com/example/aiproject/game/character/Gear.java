@@ -11,11 +11,10 @@ import static com.example.aiproject.game.character.Stat.*;
 @Getter
 public class Gear
 {
-    private static final StringBuilder strBuilder = new StringBuilder();
-    private static void   clearText() {strBuilder.setLength(0);}
-    private static String getText  () {return strBuilder.toString();}
-    private static String startText(String text, Object... objects) {clearText(); return addText(text,objects);}
-    private static String addText  (String text, Object... objects) {return strBuilder.append(String.format(text,objects)).toString();}
+    private static final StringBuilder text = new StringBuilder();
+    private static void   clearText() {text.setLength(0);}
+    private static String newText  (String text, Object... objects) {clearText(); return addText(text, objects);}
+    private static String addText  (String text, Object... objects) {return Gear.text.append(String.format(text, objects)).toString();}
 
     private String         name;
     private Stat           aptitude;
@@ -36,7 +35,7 @@ public class Gear
     public String use(Character user) {return use(user, user);}
     public String use(Character user, Character opponent)
     {
-        if (!this.isAction()) return startText("%s checks their %s.", user.name, name);
+        if (!this.isAction()) return newText("%s checks their %s.", user.name, name);
         switch (aptitude) // todo: switch function possibly better off as child classes (Gear->Actionable->Attack/Consumable)
         {
             case VIGOR:        return consume(user);
@@ -52,7 +51,7 @@ public class Gear
         int roll = user.roll(aptitude);
         int defence = opponent.getStat(DEFENCE);
 
-        startText("Using their %s, %s rolls %d against %s's %d defence, ", name, user.name, roll, opponent.name, defence);
+        newText("Using their %s, %s rolls %d against %s's %d defence, ", name, user.name, roll, opponent.name, defence);
 
         if (roll >= defence)
         {
@@ -80,15 +79,22 @@ public class Gear
             addText("failing to hit as %s evades the attack.",opponent.name);
         }
 
-        return getText();
+        return text.toString();
     }
 
-    private String consume(Character user)
+    private String consume(Character user) // todo: consumable gear functionality
     {
-        startText("%s consumes one %s, ",user.name,name);
+        newText("%s consumes one %s, ", user.name, name);
 
         user.increase(modifiers.toArray(new Modifier[]{}));
 
-        return getText();
+        return text.toString();
+    }
+
+    public String toString()
+    {
+        newText(name);
+        for (Modifier modifier : modifiers) addText(' ' + modifier.toString());
+        return text.toString();
     }
 }

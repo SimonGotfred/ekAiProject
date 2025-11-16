@@ -23,6 +23,6 @@ public class Option extends androidx.appcompat.widget.AppCompatButton
         this.setPadding(padP,padP,padP,padP);
 
         this.gear = gear;
-        this.setText(this.gear.getName());
+        this.setText(this.gear.toString());
     }
 }

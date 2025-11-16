@@ -23,15 +23,20 @@ public class GameEngine implements Service
 {
     private final MainActivity ui;
 
+    private void  clearText()  {text.setLength(0);}
+    private void  newText(String text, Object... objects)   {clearText(); addText(text, objects);}
+    private void  addText  (String text, Object... objects) {this.text.append(String.format(text,objects));}
+    private void  prompt() {prompt(promptInstructions + text); clearText();}
     private final StringBuilder text = new StringBuilder();
-    private final String promptInstructions =
+    public  final String    promptInstructions =
             "Dramatically describe how the following scene play out in 2-4 sentences using present tense, "
           + "always refer to the player as 'you', and do NOT mention specific numbers or stats:\n";
 
     private final List<Character> templates = new ArrayList<>();
-    private final List<Gear>      gearLib = new ArrayList<>();
+    private final List<Gear>      gearLib   = new ArrayList<>();
 
-    private final Gear            proceed = new Gear("Proceed");
+    private final Option RESTART = buildOption("Restart");
+    private final Option PROCEED = buildOption("Proceed");
 
     private Player    player;
     private Character adversary;
@@ -49,49 +54,54 @@ public class GameEngine implements Service
 
     public void start()
     {
-        player    = new Player(templates.get(0));
-        adversary = new Character(RandomSuite.oneOf(templates.subList(1,templates.size())));
-        prompt(promptInstructions + player.getName() + " enters a dungeon and encounters a "
-                                  + adversary.getName() + ", bent on fighting them.");
+        player    = newPlayer();
+        adversary = newAdversary();
+
+        newText("%s enters a dungeon and encounters a %s, bent on fighting them.",
+                player.getName(), adversary.getName());
+
+        prompt();
     }
 
     public List<Option> listOptions()
     {
         List<Option> options = new ArrayList<>();
-        if (adversary.isDead()) options.add(new Option(ui, proceed));
-        else for (Gear gear : player.getActions()) {options.add(new Option(ui, gear));}
+        if       (player   .isDead()) options.add(RESTART);
+        else if  (adversary.isDead()) options.add(PROCEED);
+        else for (Gear gear : player.getActions()) {options.add(buildOption(gear));}
         return options;
     }
 
-    public void submitOption(Option option) // todo return numerics
+    public void submitOption(Option option) // todo print dice rolls
     {
         try
         {
-            text.setLength(0);
-            if (option.gear.equals(proceed)) resolveTravel(option.gear);
-            else resolveCombat(option.gear);
-            prompt(promptInstructions + text);
+            clearOptions();
+            if      (option.equals(RESTART)) start();
+            else if (option.equals(PROCEED)) resolveTravel(option.gear);
+            else     resolveCombat(option.gear);
+            prompt();
         }
-        catch (Exception e) {ui.newText(e.getMessage());}
+        catch (Exception e) {print(e.getMessage());}
     }
 
     public void resolveCombat(Gear gear)
     {
-        text.append(gear.use(player, adversary));
-        if (adversary.isAlive()) text.append("\nMeanwhile ").append(adversary.act(player));
+        newText(gear.use(player, adversary));
+        if (adversary.isAlive()) addText("\nMeanwhile " + adversary.act(player));
     }
 
     public void resolveTravel(Gear gear)
     {
-
+        adversary = newAdversary();
+        newText("%s ventures deeper into the dungeon, encountering a %s in the next room, bent on fighting them.",
+                player.getName(), adversary.getName());
     }
 
-    public String getText()
-    {
-        return ""; // todo
-    }
+    private Character newAdversary() {return new Character(RandomSuite.oneOf(templates.subList(1,templates.size())));}
+    private Player    newPlayer()    {player = new Player(templates.get(0)); return player;}
 
-    public String writeStats(){return writeStats(GOLD, VIGOR, DEFENCE, ATHLETICS, INTELLIGENCE, WILLPOWER);}
+    public String statBar(){return writeStats(GOLD, VIGOR, DEFENCE, ATHLETICS, INTELLIGENCE, WILLPOWER);}
 
     public String writeStats(Stat... stats)
     {
@@ -105,6 +115,20 @@ public class GameEngine implements Service
     @Override
     public void onServiceResponse(Response response)
     {
-        ui.newText(response.getText());
+        newText("%s<p>%s</p>",statBar(),response.getText());
+        print(text.toString());
+        refreshOptions();
+    }
+
+        //  UI Hooks  \\
+    public void   print(String text) {ui.newText(text);}
+    public void   clearOptions()     {ui.clearButtons();}
+    public void   refreshOptions()   {ui.clearButtons(); ui.addMultipleBtn(listOptions());}
+    public Option buildOption(String option) {return buildOption(new Gear(option));}
+    public Option buildOption(Gear gear)
+    {
+        Option option = new Option(ui,gear);
+        option.setOnClickListener(ui -> submitOption(option));
+        return option;
     }
 }

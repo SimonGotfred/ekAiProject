@@ -51,22 +51,22 @@ public class MainActivity extends AppCompatActivity
 
     public void newText(String text)
     {
-        setText(game.writeStats() + "<p>" + text + "</p>");
+        setText("<p>" + text + "</p>");
     }
 
     public void addText(String text)
     {
-        setText(getText() + game.writeStats() + "<p>" + text + "</p>");
+        setText("<p>" + getText() + "</p><p>" + text + "</p>");
     }
 
     private void setText(String text)
     {
-        runOnUiThread(() -> {textView.setText(Html.fromHtml(text));refreshButtons();});
+        runOnUiThread(() -> textView.setText(Html.fromHtml(text)));
     }
 
     public void clearText()
     {
-        runOnUiThread(() -> textView.setText(""));
+        setText("");
     }
 
     public String getText()
@@ -79,22 +79,12 @@ public class MainActivity extends AppCompatActivity
         clearButtons();
         try {game.start();}
         catch (Exception e)
-        {
-            throw new RuntimeException(e);
-        }
+        {throw new RuntimeException(e);}
     }
 
     public void addButton(Option option)
     {
-        // add button functionality
-        option.setOnClickListener(v ->
-        {
-            clearButtons();
-            game.submitOption(option);
-        });
-
-        // add button to the ui
-        optionView.addView(option);
+        runOnUiThread(() -> optionView.addView(option));
     }
 
     public void addMultipleBtn(List<Option> options)
@@ -105,19 +95,13 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void refreshButtons()
-    {
-        clearButtons();
-        addMultipleBtn(game.listOptions());
-    }
-
     public void removeButton(Button button)
     {
-        optionView.removeView(button);
+        runOnUiThread(() -> optionView.removeView(button));
     }
 
     public void clearButtons()
     {
-        optionView.removeAllViews();
+        runOnUiThread(() -> optionView.removeAllViews());
     }
 }

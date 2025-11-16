@@ -21,6 +21,6 @@ public class Modifier
     public String toString()
     {
         if (dice == null) return value + stat.icon;
-        return dice.name() +'+'+ value + stat.icon;
+        return value + dice.name() + stat.icon;
     }
 }
