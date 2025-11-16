@@ -6,9 +6,10 @@ import com.example.aiproject.ai.Response;
 import com.example.aiproject.ai.Service;
 
 import com.example.aiproject.game.character.Character;
-import com.example.aiproject.game.character.Gear;
 import com.example.aiproject.game.character.Player;
 import com.example.aiproject.game.character.Stat;
+import com.example.aiproject.game.character.Gear;
+
 import com.google.gson.Gson;
 
 import java.io.InputStream;
@@ -22,30 +23,34 @@ public class GameEngine implements Service
 {
     private final MainActivity ui;
 
-    private void  clearText()  {text.setLength(0);}
-    private void  newText(String text, Object... objects)   {clearText(); addText(text, objects);}
-    private void  addText  (String text, Object... objects) {this.text.append(String.format(text,objects));}
-    private void  prompt() {prompt(promptInstructions + text); clearText();}
+    private void  clearText(){text.setLength(0);}
+    private void  newText(String text, Object... objects) {clearText(); addText(text, objects);}
+    private void  addText(String text, Object... objects) {this.text.append(String.format(text,objects));}
+    private void  prompt(){prompt(promptInstructions + text); clearText();}
     private final StringBuilder text = new StringBuilder();
-    public  final String    promptInstructions =
+    public  final String        promptInstructions =
             "Dramatically describe how the following scene play out in 2-4 sentences using present tense, "
           + "always refer to the player as 'you', and do NOT mention specific numbers or stats:\n";
-
-    private final List<Character> templates = new ArrayList<>();
-    private final List<Gear>      gearLib   = new ArrayList<>();
 
     private final Option RESTART;
     private final Option PROCEED;
 
-    private Player    player;
-    private Character adversary;
+    private final RollableList<Gear>      gearLib   = new RollableList<>();
+    private final RollableList<Character> templates = new RollableList<>();
+
+    private final Character newPlayerTemplate;
+    private       Character adversary;
+    private       Player    player;
 
     public GameEngine(MainActivity mainActivity, InputStream resources)
     {
         this.ui = mainActivity;
-        RESTART = buildOption("Restart"); // initialized in constructor to let 'ui' initialize fully first.
+
+        RESTART = buildOption("Restart"); // initialized in constructor to set 'ui' first.
         PROCEED = buildOption("Proceed");
+
         this.loadAdversaries(resources);
+        newPlayerTemplate = templates.remove(0);
     }
 
     public void loadAdversaries(InputStream stream)
@@ -67,9 +72,9 @@ public class GameEngine implements Service
     public List<Option> listOptions()
     {
         List<Option> options = new ArrayList<>();
-        if       (player   .isDead()) options.add(RESTART);
-        else if  (adversary.isDead()) options.add(PROCEED);
-        else for (Gear gear : player.getActions()) {options.add(buildOption(gear));}
+        if       (player   .isDead())              options.add(RESTART);
+        else if  (adversary.isDead())              options.add(PROCEED);
+        else for (Gear gear : player.getActions()) options.add(buildOption(gear));
         return options;
     }
 
@@ -99,8 +104,8 @@ public class GameEngine implements Service
                 player.getName(), adversary.getName());
     }
 
-    private Character newAdversary() {return new Character(RandomSuite.oneOf(templates.subList(1,templates.size())));}
-    private Player    newPlayer()    {player = new Player(templates.get(0)); return player;}
+    private Character newAdversary() {return   new Character(templates.getRandom());        }
+    private Player    newPlayer()    {player = new Player(newPlayerTemplate); return player;}
 
     public String statBar(){return writeStats(GOLD, VIGOR, DEFENCE, ATHLETICS, INTELLIGENCE, WILLPOWER);}
 
@@ -122,7 +127,7 @@ public class GameEngine implements Service
     }
 
         //  UI Hooks  \\
-    public void   print(String text) {ui.newText(text);}
+    public void   print(String text) {ui.newText (text);}
     public void   clearOptions()     {ui.clearButtons();}
     public void   refreshOptions()   {ui.clearButtons(); ui.addMultipleBtn(listOptions());}
     public Option buildOption(String option) {return buildOption(new Gear(option));}
