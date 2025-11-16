@@ -1,5 +1,6 @@
 package com.example.aiproject;
 
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.View;
@@ -8,7 +9,6 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.example.aiproject.ai.Service;
 import com.example.aiproject.game.GameEngine;
 import com.example.aiproject.game.Option;
 
@@ -22,30 +22,31 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity
 {
-    private Service      service;
     private GameEngine   game;
     private TextView     textView;
     private ScrollView   textScroll;
     private LinearLayout optionView;
+    private Resources    resources;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-        super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState); // todo: save game progress between instances?
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) ->
+        {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
         optionView = findViewById(R.id.OptionCont);
-        textView   = findViewById(R.id.TextWindow);
         textScroll = findViewById(R.id.TextScroll);
+        textView   = findViewById(R.id.TextWindow);
+        resources  = getResources();
 
-        service = new Service(this);
-        game    = new GameEngine(this, service);
+        game = new GameEngine(this, resources.openRawResource(R.raw.adversaries));
     }
 
     public void newText(String text)
@@ -76,7 +77,11 @@ public class MainActivity extends AppCompatActivity
     public void onButton(View view) // initial start-button
     {
         clearButtons();
-        game.start();
+        try {game.start();}
+        catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     public void addButton(Option option)

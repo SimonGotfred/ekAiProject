@@ -1,6 +1,5 @@
 package com.example.aiproject.ai;
 
-import com.example.aiproject.MainActivity;
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
@@ -11,47 +10,40 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 
 import lombok.Getter;
 
-public class Service
+public interface Service
 {
     // using a published FREE api-key (env-variables do not work with android)
-    private static final String apiKey = "AIzaSyApwQZtXL4hv94gLGo4JP-2havj96HLcx0";
-    private static final String spec =
+    String apiKey   = "AIzaSyApwQZtXL4hv94gLGo4JP-2havj96HLcx0";
+    String endPoint =
     "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
 
-    private final   URL          url;
-    private final   MainActivity ui;
-    @Getter private boolean      busy = false;
+//    Map<Message, Response> responses = new LinkedHashMap<>();
+    List<Response> responses = new ArrayList<>();
 
-    private final ArrayList<Response> responses = new ArrayList<>(); // todo: custom list for responses
-    public  List<Response> getResponses() {return List.copyOf(responses);}
+            void onServiceResponse (Response response);
+    default void onServiceException(Exception exception){throw new RuntimeException(exception);}
 
-    public Service(MainActivity mainActivity)
+    default Thread prompt(String prompt)
     {
-        try   {url = new URL(spec);}
-        catch (MalformedURLException e) {throw new RuntimeException(e);}
-        this.ui = mainActivity;
-    }
-
-    public Thread prompt(String prompt)
-    {
-        if (busy) return null;
-        busy = true; // block new requests during ongoing request
-
         Thread thread = new Thread()
         {
             @Override public void run()
             {
-                String body = "{\"contents\": [{\"parts\": [{\"text\": \""+prompt+"\"}]}]}"; // todo: proper bodybuilding
+                URL url;
                 HttpURLConnection connection = null;
+                String body = "{\"contents\": [{\"parts\": [{\"text\": \""+prompt+"\"}]}]}"; // todo: proper bodybuilding
 
                 try
                 {
+                    url = new URL(endPoint);
                     connection = (HttpsURLConnection) url.openConnection();
 
                     connection.setDoOutput(true);
@@ -68,20 +60,21 @@ public class Service
                     if (connection.getResponseCode() != 200) throw new ConnectException("Bad Status: " + connection.getResponseCode());
 
                     BufferedReader input = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-
                     Response response = new Gson().fromJson(input, Response.class);
-                    responses.add(response);
+                    connection.disconnect();
 
-                    ui.newText(response.getText());
+                    responses.add(response);
+                    onServiceResponse(response);
                 }
                 catch (Exception e)
                 {
-                    ui.newText(e.getMessage()); // todo: proper error handling
+                    // close connection before letting 'client' spend time handling exception.
+                    if (connection != null) connection.disconnect();
+                    onServiceException(e);
                 }
                 finally
                 {
-                    if (connection != null) connection.disconnect();
-                    busy = false; // open up for new requests after active threat finishes
+                    if (connection != null) connection.disconnect(); // close connection finally - just in case
                 }
             }
         };
