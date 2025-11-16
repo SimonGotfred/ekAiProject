@@ -1,7 +1,6 @@
 package com.example.aiproject.game;
 
 import com.example.aiproject.MainActivity;
-//import com.example.aiproject.R;
 
 import com.example.aiproject.ai.Response;
 import com.example.aiproject.ai.Service;
@@ -35,8 +34,8 @@ public class GameEngine implements Service
     private final List<Character> templates = new ArrayList<>();
     private final List<Gear>      gearLib   = new ArrayList<>();
 
-    private final Option RESTART = buildOption("Restart");
-    private final Option PROCEED = buildOption("Proceed");
+    private final Option RESTART;
+    private final Option PROCEED;
 
     private Player    player;
     private Character adversary;
@@ -44,6 +43,8 @@ public class GameEngine implements Service
     public GameEngine(MainActivity mainActivity, InputStream resources)
     {
         this.ui = mainActivity;
+        RESTART = buildOption("Restart"); // initialized in constructor to let 'ui' initialize fully first.
+        PROCEED = buildOption("Proceed");
         this.loadAdversaries(resources);
     }
 
