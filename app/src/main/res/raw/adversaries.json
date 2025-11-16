@@ -17,7 +17,7 @@
         [
           {
             "stat": "MELEE",
-            "value": 1,
+            "rolls": 2,
             "dice": "d4"
           }
         ]
@@ -42,7 +42,7 @@
         [
           {
             "stat": "MELEE",
-            "value": 1,
+            "rolls": 2,
             "dice": "d4"
           }
         ]
@@ -53,11 +53,11 @@
       [
         {
           "stat": "DEFENCE",
-          "value": 2
+          "modifier": 2
         },
         {
           "stat": "ATHLETICS",
-          "value": -1
+          "modifier": -1
         }
       ]
     }
@@ -81,8 +81,7 @@
         [
           {
             "stat": "MAGIC",
-            "value": 1,
-            "dice": "d8"
+            "dice": "d10"
           }
         ]
       },
@@ -92,11 +91,11 @@
         [
           {
             "stat": "WILLPOWER",
-            "value": 1
+            "modifier": 1
           },
           {
             "stat": "INTELLIGENCE",
-            "value": -1
+            "modifier": -1
           }
         ]
       }
@@ -120,7 +119,7 @@
         [
           {
             "stat": "MELEE",
-            "value": 1,
+            "rolls": 1,
             "dice": "d4"
           }
         ]
@@ -145,8 +144,8 @@
         [
           {
             "stat": "MELEE",
-            "value": 2,
-            "dice": "d4"
+            "rolls": 2,
+            "dice": "d6"
           }
         ]
       }

@@ -1,5 +1,6 @@
 package com.example.aiproject.game.character;
 
+import com.example.aiproject.game.Turn;
 import com.example.aiproject.game.tool.Dice;
 import com.example.aiproject.game.RandomSuite;
 
@@ -15,6 +16,8 @@ import static com.example.aiproject.game.character.Stat.*;
 
 public class Character
 {
+    private static final Modifier baseRoll = new Modifier(2, Dice.d4);
+
     @Getter protected String name, description;
     @Getter protected List<Gear>     gear  = new ArrayList<>();
     protected EnumMap<Stat, Integer> stats = new EnumMap<>(Stat.class);
@@ -28,16 +31,14 @@ public class Character
         this.stats        . put(FATIGUE,0);
     }
 
-    public Gear   act(){return RandomSuite.oneOf(this.getActions());}
-    public String act(Character adversary)
-    {
-        return act().use(this, adversary); // todo: catch if no gear
-    }
+    public int    roll(Stat aptitude)               {return baseRoll.rollValue(aptitude, getStat(aptitude));}
+    public String result()                          {return baseRoll.result();}
 
-    public int roll(Stat aptitude)   {return getStat(aptitude) + resolveBonus(aptitude) + Dice.d4.roll(2) - getStat(FATIGUE);}
+    public Gear act()                               {return RandomSuite.oneOf(this.getActions());}
+    public Turn act(Character adversary)            {return act().use(this, adversary);} // todo: catch if no gear
 
-    public String use(Gear gear, Character adversary) {return gear.use(this, adversary);}
-    public String use(Gear gear)                      {return gear.use(this, this);}
+    public Turn use(Gear gear, Character adversary) {return gear.use(this, adversary);}
+    public Turn use(Gear gear)                      {return gear.use(this, this);}
 
     public List<Gear> getActions(){return gear.stream().filter(Gear::isAction).collect(Collectors.toList());}
 
@@ -69,7 +70,7 @@ public class Character
         {
             for (Modifier mod : gear.getModifiers())
             {
-                if (statList.contains(mod.getStat())) bonus += mod.getValue();
+                if (statList.contains(mod.getStat())) bonus += mod.getRolls();
             }
         }
         return bonus;

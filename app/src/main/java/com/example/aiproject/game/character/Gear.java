@@ -1,9 +1,12 @@
 package com.example.aiproject.game.character;
 
+import com.example.aiproject.game.Turn;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import androidx.annotation.NonNull;
 import lombok.Getter;
 
 import static com.example.aiproject.game.character.Stat.*;
@@ -32,24 +35,26 @@ public class Gear
     public boolean isAction() {return aptitude != null;}
     public boolean isArmor()  {return !isAction() && modifiers.stream().anyMatch(modifier -> modifier.getStat().equals(DEFENCE));}
 
-    public String use(Character user) {return use(user, user);}
-    public String use(Character user, Character opponent)
+    public Turn use(Character user) {return use(user, user);}
+    public Turn use(Character user, Character opponent)
     {
-        if (!this.isAction()) return newText("%s checks their %s.", user.name, name);
+        if (!this.isAction()) return new Turn(user, this);
         switch (aptitude) // todo: switch function possibly better off as child classes (Gear->Actionable->Attack/Consumable)
         {
             case VIGOR:        return consume(user);
             case ATHLETICS:
             case INTELLIGENCE:
             case WILLPOWER:    return attack(user, opponent);
-            default:           return ""; // todo: default gear use
+            default:           return new Turn(user, this); // todo: default gear use
         }
     }
 
-    private String attack(Character user, Character opponent)
+    private Turn attack(Character user, Character opponent)
     {
-        int roll = user.roll(aptitude);
+        Turn turn   = new Turn(user, this);
         int defence = opponent.getStat(DEFENCE);
+        int roll    = user.roll(aptitude);
+        String dice = user.result() + " vs " + defence + DEFENCE.icon;
 
         newText("Using their %s, %s rolls %d against %s's %d defence, ", name, user.name, roll, opponent.name, defence);
 
@@ -61,7 +66,7 @@ public class Gear
                                                           modifier.getStat().equals(MELEE)||
                                                           modifier.getStat().equals(RANGED)||
                                                           modifier.getStat().equals(MAGIC)).collect(Collectors.toList()))
-            {damage += mod.rollValue();}
+            {damage += mod.rollValue();dice+='\n'+mod.result();}
 
             opponent.increase(FATIGUE, damage);
 
@@ -79,18 +84,30 @@ public class Gear
             addText("failing to hit as %s evades the attack.",opponent.name);
         }
 
-        return text.toString();
+        turn.setOutcome(text.toString());
+        turn.setDiceThrow(dice);
+
+        return turn;
     }
 
-    private String consume(Character user) // todo: consumable gear functionality
+    private Turn consume(Character user) // todo: consumable gear functionality
     {
+        Turn turn = new Turn(user, this);
         newText("%s consumes one %s, ", user.name, name);
 
         user.increase(modifiers.toArray(new Modifier[]{}));
 
-        return text.toString();
+        return turn;
     }
 
+    private String result()
+    {
+        String text = "";
+        for (Modifier modifier : modifiers) text+=(modifier.result());
+        return text.trim();
+    }
+
+    @NonNull
     public String toString()
     {
         newText(name);

@@ -16,7 +16,9 @@ import com.google.gson.Gson;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import static com.example.aiproject.game.character.Stat.*;
 
@@ -35,6 +37,9 @@ public class GameEngine implements Service
 
     private final Option RESTART;
     private final Option PROCEED;
+
+    private final LinkedHashMap<Turn,Turn> rounds = new LinkedHashMap<>();
+    private       Entry<Turn, Turn>    lastRound;
 
     private final RollableList<Gear>      gearLib   = new RollableList<>();
     private final RollableList<Character> templates = new RollableList<>();
@@ -92,10 +97,19 @@ public class GameEngine implements Service
         catch (Exception e) {print(e.getMessage());}
     }
 
+    private Turn adversaryAction(Character adversary)
+    {
+        if (adversary == null || adversary.isDead()) return null;
+        return adversary.act(player);
+    }
+
     public void resolveCombat(Gear gear)
     {
-        newText(gear.use(player, adversary));
-        if (adversary.isAlive()) addText("\nMeanwhile " + adversary.act(player));
+        rounds.put(gear.use(player, adversary), adversaryAction(adversary));
+        lastRound = rounds.lastEntry();
+
+        newText(lastRound.getKey().getOutcome());
+        if (adversary.isAlive()) addText("\nMeanwhile " + lastRound.getValue().getOutcome());
     }
 
     public void resolveTravel(Gear gear)
@@ -110,6 +124,14 @@ public class GameEngine implements Service
 
     public String statBar(){return writeStats(GOLD, VIGOR, DEFENCE, ATHLETICS, INTELLIGENCE, WILLPOWER);}
 
+    public String result(){return resultOf(lastRound);}
+    public String resultOf(Entry<Turn,Turn> round)
+    {
+        String text = round.getKey().getDiceThrow();
+        if (round.getValue()!=null) text += '\n' + round.getValue().getDiceThrow();
+        return text;
+    }
+
     public String writeStats(Stat... stats)
     {
         text.setLength(0);
@@ -122,7 +144,7 @@ public class GameEngine implements Service
     @Override
     public void onServiceResponse(Response response)
     {
-        newText("%s<p>%s</p>",statBar(),response.getText());
+        newText("%s<p>%s</p><p>%s</p>",statBar(),response.getText(),result());
         print(text.toString());
         refreshOptions();
     }
