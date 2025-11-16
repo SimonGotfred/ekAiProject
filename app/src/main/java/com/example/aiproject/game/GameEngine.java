@@ -51,7 +51,7 @@ public class GameEngine implements Service
         PROCEED = buildOption("Proceed");
 
         this.loadAdversaries(resources);
-        newPlayerTemplate = templates.remove(0);
+        newPlayerTemplate = templates.remove(0); // separate player template from other characters.
     }
 
     public void loadAdversaries(InputStream stream)

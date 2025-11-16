@@ -46,40 +46,15 @@ public class MainActivity extends AppCompatActivity
         textView   = findViewById(R.id.TextWindow);
         resources  = getResources();
 
-        try
-        {
-            game = new GameEngine(this, resources.openRawResource(R.raw.adversaries));
-        }
-        catch (Exception e)
-        {
-            throw new RuntimeException(e);
-        }
+        try {game = new GameEngine(this, resources.openRawResource(R.raw.adversaries));}
+        catch (Exception e) {throw new RuntimeException(e);}
     }
 
-    public void newText(String text)
-    {
-        setText("<p>" + text + "</p>");
-    }
-
-    public void addText(String text)
-    {
-        setText("<p>" + getText() + "</p><p>" + text + "</p>");
-    }
-
-    private void setText(String text)
-    {
-        runOnUiThread(() -> textView.setText(Html.fromHtml(text)));
-    }
-
-    public void clearText()
-    {
-        setText("");
-    }
-
-    public String getText()
-    {
-        return Html.escapeHtml(textView.getText());
-    }
+    public   void clearText()          {setText("");}
+    public   void newText(String text) {setText("<p>" + text + "</p>");}
+    public   void addText(String text) {setText("<p>" + getText() + "</p><p>" + text + "</p>");}
+    private  void setText(String text) {runOnUiThread(()  ->   textView.setText(Html.fromHtml(text)));}
+    public String getText()            {return Html.escapeHtml(textView.getText());}
 
     public void onButton(View view) // initial start-button
     {
@@ -89,26 +64,8 @@ public class MainActivity extends AppCompatActivity
         {throw new RuntimeException(e);}
     }
 
-    public void addButton(Option option)
-    {
-        runOnUiThread(() -> optionView.addView(option));
-    }
-
-    public void addMultipleBtn(List<Option> options)
-    {
-        for (Option option : options)
-        {
-            addButton(option);
-        }
-    }
-
-    public void removeButton(Button button)
-    {
-        runOnUiThread(() -> optionView.removeView(button));
-    }
-
-    public void clearButtons()
-    {
-        runOnUiThread(() -> optionView.removeAllViews());
-    }
+    public void addButton(Option option)             {runOnUiThread(() -> optionView.addView(option));}
+    public void addMultipleBtn(List<Option> options) {for (Option option : options) addButton(option);}
+    public void removeButton(Button button)          {runOnUiThread(() -> optionView.removeView(button));}
+    public void clearButtons()                       {runOnUiThread(() -> optionView.removeAllViews());}
 }

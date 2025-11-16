@@ -5,7 +5,7 @@ import java.util.Random;
 
 public class RollableList<T> extends ArrayList<T>
 {
-    private static final Random r = new Random();
+    private static final  Random r = new Random();
     private int rIndex() {return r.nextInt(size());}
 
     public T getRandom()
