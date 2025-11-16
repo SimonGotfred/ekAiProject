@@ -31,6 +31,7 @@ public class GameEngine implements Service
     private void  addText(String text, Object... objects) {this.text.append(String.format(text,objects));}
     private void  prompt(){prompt(promptInstructions + text); clearText();}
     private final StringBuilder text = new StringBuilder();
+    public  final static String seperator = "\n_________________________________________";
     public  final String        promptInstructions =
             "Dramatically describe how the following scene play out in 2-4 sentences using present tense, "
           + "always refer to the player as 'you', and do NOT mention specific numbers or stats:\n";
@@ -66,6 +67,7 @@ public class GameEngine implements Service
 
     public void start()
     {
+        lastRound = null;
         player    = newPlayer();
         adversary = newAdversary();
 
@@ -114,6 +116,7 @@ public class GameEngine implements Service
 
     public void resolveTravel(Gear gear)
     {
+        lastRound = null;
         adversary = newAdversary();
         newText("%s ventures deeper into the dungeon, encountering a %s in the next room, bent on fighting them.",
                 player.getName(), adversary.getName());
@@ -125,10 +128,12 @@ public class GameEngine implements Service
     public String statBar(){return writeStats(GOLD, VIGOR, DEFENCE, ATHLETICS, INTELLIGENCE, WILLPOWER);}
 
     public String result(){return resultOf(lastRound);}
+    public String resultOf(Turn turn){return turn.getActor()+":\t"+turn.getDiceThrow();} // todo: figure out breaklines
     public String resultOf(Entry<Turn,Turn> round)
     {
-        String text = round.getKey().getDiceThrow();
-        if (round.getValue()!=null) text += '\n' + round.getValue().getDiceThrow();
+        if (round == null) return "";
+        String text = resultOf(round.getKey());
+        if (round.getValue()!=null) text += seperator + "</p>" + resultOf(round.getValue()) + "<p>";
         return text;
     }
 
@@ -137,7 +142,7 @@ public class GameEngine implements Service
         text.setLength(0);
         text.append("<p>\t\t\t");
         for (Stat stat : stats) {text.append(player.writeStat(stat)).append("\t\t");}
-        text.append("\n_________________________________________</p>");
+        text.append(seperator + "</p>");
         return text.toString();
     }
 

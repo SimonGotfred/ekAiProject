@@ -16,7 +16,7 @@ import static com.example.aiproject.game.character.Stat.*;
 
 public class Character
 {
-    private static final Modifier baseRoll = new Modifier(2, Dice.d4);
+    private static final Modifier baseRoll = new Modifier(2, Dice.d10);
 
     @Getter protected String name, description;
     @Getter protected List<Gear>     gear  = new ArrayList<>();
@@ -32,7 +32,7 @@ public class Character
     }
 
     public int    roll(Stat aptitude)               {return baseRoll.rollValue(aptitude, getStat(aptitude));}
-    public String result()                          {return baseRoll.result();}
+    public String result()                          {return baseRoll.result(false);}
 
     public Gear act()                               {return RandomSuite.oneOf(this.getActions());}
     public Turn act(Character adversary)            {return act().use(this, adversary);} // todo: catch if no gear
@@ -55,8 +55,8 @@ public class Character
         switch (stat)
         {
             case VIGOR:     return Math.max(getStat(MAX_VIGOR) - getStat(FATIGUE), 0);
-            case MAX_VIGOR: return Math.max(5*(rawVigor() + resolveBonus(ATHLETICS, WILLPOWER, VIGOR)),    5);
-            case DEFENCE:   return Math.max(rawDefence()  + resolveBonus(ATHLETICS, INTELLIGENCE, DEFENCE),0);
+            case MAX_VIGOR: return Math.max(5*(rawVigor()   + resolveBonus(ATHLETICS, WILLPOWER, VIGOR)),     5);
+            case DEFENCE:   return Math.max(2*(rawDefence() + resolveBonus(ATHLETICS, INTELLIGENCE, DEFENCE)),0);
             default:        return          rawStat(stat) + resolveBonus(stat);
         }
     }

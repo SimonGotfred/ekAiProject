@@ -31,16 +31,17 @@ public class Modifier
         return rollValue();
     }
 
-    private String template() {return template("");}
+    public  String template() {return template("");}
     private String template(String result)
     {
         if (dice == null) return modifier + rolls + "";
         if (modifier > 0) return rolls + dice.name() + result + " +" + modifier;
-        if (modifier < 0) return rolls + dice.name() + result + " "  + modifier;
+        if (modifier < 0) return rolls + dice.name() + result + ' '  + modifier;
         return rolls + dice.name() + result;
     }
 
     @NonNull
     public String toString() {return template()+stat.icon;}
-    public String result()   {return stat.icon+' '+template(" ⊱ <b>" + result + "</b>");}
+    public String result()   {return template("=<b>" + result + "</b>");}
+    public String result(boolean iconInFront){return iconInFront ? stat.icon+result() : result()+stat.icon;}
 }

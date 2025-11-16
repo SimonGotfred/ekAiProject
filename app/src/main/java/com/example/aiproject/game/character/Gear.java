@@ -61,12 +61,13 @@ public class Gear
         if (roll >= defence)
         {
             int damage = user.getStat(aptitude);
+            dice+= "</p><p>"+"Damage: " + damage + aptitude.icon;
 
             for (Modifier mod : modifiers.stream().filter(modifier ->
                                                           modifier.getStat().equals(MELEE)||
                                                           modifier.getStat().equals(RANGED)||
                                                           modifier.getStat().equals(MAGIC)).collect(Collectors.toList()))
-            {damage += mod.rollValue();dice+='\n'+mod.result();}
+            {damage += mod.rollValue();dice+="+ "+mod.result(false);}
 
             opponent.increase(FATIGUE, damage);
 
