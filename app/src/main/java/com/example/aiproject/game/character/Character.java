@@ -1,6 +1,6 @@
 package com.example.aiproject.game.character;
 
-import com.example.aiproject.game.Dice;
+import com.example.aiproject.game.tool.Dice;
 import com.example.aiproject.game.RandomSuite;
 
 import java.util.ArrayList;

@@ -9,6 +9,7 @@ import com.example.aiproject.game.character.Character;
 import com.example.aiproject.game.character.Player;
 import com.example.aiproject.game.character.Stat;
 import com.example.aiproject.game.character.Gear;
+import com.example.aiproject.game.tool.RollableList;
 
 import com.google.gson.Gson;
 

@@ -1,7 +1,6 @@
-package com.example.aiproject.game;
+package com.example.aiproject.game.tool;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 public class RollableList<T> extends ArrayList<T>

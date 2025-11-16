@@ -1,4 +1,4 @@
-package com.example.aiproject.game;
+package com.example.aiproject.game.tool;
 
 import java.util.Random;
 
