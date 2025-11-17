@@ -25,26 +25,35 @@ public interface Service
     String endPoint =
     "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
 
-//    Map<Message, Response> responses = new LinkedHashMap<>();
-    List<Response> responses = new ArrayList<>();
+    // url instanced as array to let interface's *final* value be "instanced" after interface initialization.
+    // this is because exceptions, eg. caused by URL instantiation, cannot be caught during interface initialization.
+    URL[] url = new URL[]{null};
+
+    LinkedHashMap<Message, Response> responses = new LinkedHashMap<>();
 
             void onServiceResponse (Response response);
     default void onServiceException(Exception exception){throw new RuntimeException(exception);}
 
     default Thread prompt(String prompt)
     {
+        if (url[0]==null) // null-check faster than instancing new URL each prompt
+        {
+            try {url[0] = new URL(endPoint);}
+            catch (MalformedURLException e)
+            {throw new RuntimeException(e);}
+        }
+
         Thread thread = new Thread()
         {
             @Override public void run()
             {
-                URL url;
                 HttpURLConnection connection = null;
-                String body = "{\"contents\": [{\"parts\": [{\"text\": \""+prompt+"\"}]}]}"; // todo: proper bodybuilding
+                Message message = new Message(prompt,endPoint); // todo: proper bodybuilding
+                byte[] output = message.getOutput();
 
                 try
                 {
-                    url = new URL(endPoint);
-                    connection = (HttpsURLConnection) url.openConnection();
+                    connection = (HttpsURLConnection) url[0].openConnection();
 
                     connection.setDoOutput(true);
                     connection.setRequestMethod("POST");
@@ -54,7 +63,6 @@ public interface Service
                     connection.setRequestProperty("x-goog-api-key", apiKey);
 
                     OutputStream outputStream = connection.getOutputStream();
-                    byte[] output = body.getBytes();
                     outputStream.write(output, 0, output.length);
 
                     if (connection.getResponseCode() != 200) throw new ConnectException("Bad Status: " + connection.getResponseCode());
@@ -63,7 +71,8 @@ public interface Service
                     Response response = new Gson().fromJson(input, Response.class);
                     connection.disconnect();
 
-                    responses.add(response);
+                    message.setResponse(response); // associate message and response through each other
+                    responses.put(message,response);
                     onServiceResponse(response);
                 }
                 catch (Exception e)

@@ -7,15 +7,18 @@ import java.util.ArrayList;
 import lombok.Getter;
 import lombok.Setter;
 
-@Setter @Getter
+@Getter @Setter
 public class Response {
     ArrayList<Candidate> candidates = new ArrayList<>();
     UsageMetadata UsageMetadataObject;
     private String modelVersion;
     private String responseId;
 
-    // shortcut to what is actually wanted
-    public String getText() {return candidates.get(0).content.parts.get(0).text;}
+    private Message message; // the message that prompted this response
+
+    // shortcuts to what is usually wanted
+    public String getText()  {return candidates.get(0).content.parts.get(0).text;}
+    public String getPrompt(){return message.prompt;}
 }
 
 @Setter @Getter
