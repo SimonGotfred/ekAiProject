@@ -33,7 +33,7 @@ public class GameEngine implements Service
     private final StringBuilder text = new StringBuilder();
     public  final static String seperator =
             "⊱⟢༻                                        "
-                    + "༺⟣⊰";
+          + "༺⟣⊰"; // f**king nothing allow me to justify these two elements to either side of the screen, not even WebView worked what the f**k!
     public  final String        promptInstructions =
             "Dramatically describe how the following scene play out in 2-4 sentences using present tense, "
           + "always refer to the player as 'you', and do NOT mention specific numbers or stats:\n";
@@ -152,7 +152,7 @@ public class GameEngine implements Service
         try
         {
             newText("<h5 style=\"text-align: center\">%s<br>%s</h5>"
-                       + "<div>%s</div>"
+                       + "<p>%s</p>"
                        + "<h5 style=\"text-align: center\">%s</h5>"
                        + "<p>%s</p>", statBar(), seperator, response.getText(), seperator, result());
             print(text.toString());
