@@ -16,15 +16,10 @@ import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import lombok.Getter;
+import static com.example.aiproject.ai.ApiKey.*;
 
 public interface Service
 {
-    // using a published FREE api-key (env-variables do not work with android)
-    String apiKey   = "AIzaSyApwQZtXL4hv94gLGo4JP-2havj96HLcx0";
-    String endPoint =
-    "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
-
     // url instanced as array to let interface's *final* value be "instanced" after interface initialization.
     // this is because exceptions, eg. caused by URL instantiation, cannot be caught during interface initialization.
     URL[] url = new URL[]{null};
@@ -38,7 +33,7 @@ public interface Service
     {
         if (url[0]==null) // null-check faster than instancing new URL each prompt
         {
-            try {url[0] = new URL(endPoint);}
+            try {url[0] = new URL(GEMINI.api);}
             catch (MalformedURLException e)
             {throw new RuntimeException(e);}
         }
@@ -48,7 +43,7 @@ public interface Service
             @Override public void run()
             {
                 HttpURLConnection connection = null;
-                Message message = new Message(prompt,endPoint); // todo: proper bodybuilding
+                Message message = new Message(prompt, GEMINI.api); // todo: proper bodybuilding
                 byte[] output = message.getOutput();
 
                 try
@@ -60,7 +55,7 @@ public interface Service
                     connection.setChunkedStreamingMode(0);
                     connection.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
                     connection.setRequestProperty("Accept", "application/json");
-                    connection.setRequestProperty("x-goog-api-key", apiKey);
+                    connection.setRequestProperty("x-goog-api-key", GEMINI.apiKey);
 
                     OutputStream outputStream = connection.getOutputStream();
                     outputStream.write(output, 0, output.length);
