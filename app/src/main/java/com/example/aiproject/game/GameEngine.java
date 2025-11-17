@@ -96,7 +96,8 @@ public class GameEngine implements Service
             else     resolveCombat(option.gear);
             prompt();
         }
-        catch (Exception e) {recover(e);} // catch anything the game logic f**ks up
+        catch (Throwable e) {
+            recover(e);} // catch anything the game logic f**ks up
     }
 
     private Turn adversaryAction(Character adversary)
@@ -107,8 +108,8 @@ public class GameEngine implements Service
 
     public void resolveCombat(Gear gear)
     {
-        rounds.putFirst(gear.use(player, adversary), adversaryAction(adversary));
-        lastRound = rounds.entrySet().stream().findFirst().orElse(null);
+        rounds.put(gear.use(player, adversary), adversaryAction(adversary));
+        rounds.entrySet().iterator().forEachRemaining(round -> lastRound = round); // 'getLast()' don't exist on old systems
 
         newText(lastRound.getKey().getOutcome());
         if (adversary.isAlive()) addText("\nMeanwhile " + lastRound.getValue().getOutcome());
@@ -128,7 +129,7 @@ public class GameEngine implements Service
     public String statBar(){return writeStats(GOLD, VIGOR, DEFENCE, ATHLETICS, INTELLIGENCE, WILLPOWER);}
 
     public String result(){return resultOf(lastRound);}
-    public String resultOf(Turn turn){return turn.getActor()+":\t"+turn.getDiceThrow();} // todo: figure out breaklines
+    public String resultOf(Turn turn){return turn.getActor()+":\t"+turn.getDiceThrow();}
     public String resultOf(Entry<Turn,Turn> round)
     {
         if (round == null) return "";
@@ -155,17 +156,17 @@ public class GameEngine implements Service
             print(text.toString());
             refreshOptions();
         }
-        catch (Exception e) {recover(e);} // catch anything the a̶i̶ my service f**ks up
+        catch (Throwable e) {recover(e);} // catch anything the a̶i̶ my service f**ks up
     }
 
-    private void recover(Exception e)
+    private void recover(Throwable e)
     {
         print(e.getMessage());
         refreshOptions(RESTART);
     }
 
         //  UI Hooks  \\
-    public void   print(String text)                {ui.newText (text);}
+    public void   print(String text)                {ui.newText (text);} // todo: figure out breaklines
     public void   clearOptions()                    {ui.clearButtons();}
     public void   refreshOptions()                  {ui.clearButtons(); ui.addMultipleBtn(listOptions());}
     public void   refreshOptions(Option... options) {ui.clearButtons(); ui.addMultipleBtn(List.of(options));}
@@ -173,7 +174,8 @@ public class GameEngine implements Service
     public Option buildOption(Gear gear)
     {
         Option option = new Option(ui,gear);
-        option.setOnClickListener(ui -> submitOption(option));
+        option.setOnClickListener(ui ->
+                                          submitOption(option));
         return option;
     }
 }
