@@ -59,9 +59,7 @@ public class MainActivity extends AppCompatActivity
     public void onButton(View view) // initial start-button
     {
         clearButtons();
-        try {game.start();}
-        catch (Exception e)
-        {throw new RuntimeException(e);}
+        game.start();
     }
 
     public void addButton(Option option)             {runOnUiThread(() -> optionView.addView(option));}

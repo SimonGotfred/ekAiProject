@@ -1,7 +1,7 @@
 [
   {
     "name": "The Player",
-    "description": "A man on an adventure.",
+    "description": "You are an up-and-coming adventurer.",
     "stats":
     {
       "ATHLETICS":    3,
@@ -23,6 +23,7 @@
         ]
       },
       {
+        "loot": true,
         "name": "Health Potion",
         "aptitude": "VIGOR",
         "duration": 1,
@@ -32,6 +33,57 @@
             "stat": "VIGOR",
             "rolls": 2,
             "dice": "d4",
+            "modifier": 4
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Loot-Bug",
+    "description": "Char holding the list of bonus-loot for distribution to adversaries",
+    "gear":
+    [
+      {
+        "loot": true,
+        "name": "Heavy Helmet",
+        "modifiers":
+        [
+          {
+            "stat": "DEFENCE",
+            "modifier": 2
+          },
+          {
+            "stat": "INTELLIGENCE",
+            "modifier": -1
+          }
+        ]
+      },
+      {
+        "loot": true,
+        "name": "Health Potion",
+        "aptitude": "VIGOR",
+        "duration": 1,
+        "modifiers":
+        [
+          {
+            "stat": "VIGOR",
+            "rolls": 2,
+            "dice": "d4",
+            "modifier": 4
+          }
+        ]
+      },
+      {
+        "loot": true,
+        "name": "Gold Pouch",
+        "duration": 1,
+        "modifiers":
+        [
+          {
+            "stat": "GOLD",
+            "rolls": 1,
+            "dice": "d20",
             "modifier": 4
           }
         ]
@@ -87,6 +139,7 @@
         ]
       },
       {
+        "loot": true,
         "name": "Cumbersome Chainmail",
         "modifiers":
         [
@@ -97,6 +150,33 @@
           {
             "stat": "ATHLETICS",
             "modifier": -1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Elf",
+    "description": "A slender elf with stoic poise.",
+    "stats":
+    {
+      "ATHLETICS":    2,
+      "INTELLIGENCE": 4,
+      "WILLPOWER":    3
+    },
+    "gear":
+    [
+      {
+        "loot": true,
+        "name": "shortbow",
+        "aptitude": "INTELLIGENCE",
+        "modifiers":
+        [
+          {
+            "stat": "RANGED",
+            "rolls": 1,
+            "dice": "d4",
+            "modifier": 4
           }
         ]
       }
@@ -126,6 +206,7 @@
         ]
       },
       {
+        "loot": true,
         "name": "Spellbook",
         "modifiers":
         [

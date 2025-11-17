@@ -17,5 +17,5 @@ public class Turn
     public Turn(Character actor, Gear action)        {this(actor.getName(), action.toString());}
     public Turn(String actorName, String actionName) {this.actor = actorName; this.action = actionName;}
 
-    public String result(){return actor +": "+ diceThrow;}
+    public String result(){return actor +":<br>"+ diceThrow;}
 }

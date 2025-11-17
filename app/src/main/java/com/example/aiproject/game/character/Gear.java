@@ -55,14 +55,14 @@ public class Gear
         Turn turn   = new Turn(user, this);
         int defence = opponent.getStat(DEFENCE);
         int roll    = user.roll(aptitude);
-        String dice = user.result() + " vs " + defence + DEFENCE.icon;
+        String dice = user.result() + " ≻ " + roll + " vs " + defence + DEFENCE.icon;
 
         newText("Using their %s, %s rolls %d against %s's %d defence, ", name, user.name, roll, opponent.name, defence);
 
         if (roll >= defence)
         {
             int damage = user.getStat(aptitude);
-            dice+= "</p><p>"+"Damage: " + damage + aptitude.icon;
+            dice+= "<br>"+"Damage: " + damage + aptitude.icon;
 
             for (Modifier mod : modifiers.stream().filter(modifier ->
                                                           modifier.getStat().equals(MELEE)||

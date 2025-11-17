@@ -26,8 +26,8 @@ public class Character
     {
         this.name         = base.name;
         this.description  = base.description;
-        this.gear         = List.copyOf(base.gear);
         this.stats        = base.stats.clone();
+        this.gear         . addAll(base.gear);
         this.stats        . put(FATIGUE,0);
     }
 
