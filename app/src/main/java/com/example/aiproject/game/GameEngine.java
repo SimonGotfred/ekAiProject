@@ -25,7 +25,7 @@ import static com.example.aiproject.game.character.Stat.*;
 
 public class GameEngine implements Service
 {
-    private final boolean   useAi = false;
+    private final boolean   useAi = true;
     private final MainActivity ui;
 
     private void  clearText(){text.setLength(0);}
