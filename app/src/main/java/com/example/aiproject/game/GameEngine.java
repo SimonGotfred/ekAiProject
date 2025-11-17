@@ -86,7 +86,7 @@ public class GameEngine implements Service
         return options;
     }
 
-    public void submitOption(Option option) // todo print dice rolls
+    public void submitOption(Option option)
     {
         try
         {
@@ -96,7 +96,7 @@ public class GameEngine implements Service
             else     resolveCombat(option.gear);
             prompt();
         }
-        catch (Exception e) {print(e.getMessage());}
+        catch (Exception e) {recover(e);} // catch anything the game logic f**ks up
     }
 
     private Turn adversaryAction(Character adversary)
@@ -107,8 +107,8 @@ public class GameEngine implements Service
 
     public void resolveCombat(Gear gear)
     {
-        rounds.put(gear.use(player, adversary), adversaryAction(adversary));
-        lastRound = rounds.lastEntry();
+        rounds.putFirst(gear.use(player, adversary), adversaryAction(adversary));
+        lastRound = rounds.entrySet().stream().findFirst().orElse(null);
 
         newText(lastRound.getKey().getOutcome());
         if (adversary.isAlive()) addText("\nMeanwhile " + lastRound.getValue().getOutcome());
@@ -149,16 +149,27 @@ public class GameEngine implements Service
     @Override
     public void onServiceResponse(Response response)
     {
-        newText("%s<p>%s</p><p>%s</p>",statBar(),response.getText(),result());
-        print(text.toString());
-        refreshOptions();
+        try
+        {
+            newText("%s<p>%s</p><p>%s</p>", statBar(), response.getText(), result());
+            print(text.toString());
+            refreshOptions();
+        }
+        catch (Exception e) {recover(e);} // catch anything the a̶i̶ my service f**ks up
+    }
+
+    private void recover(Exception e)
+    {
+        print(e.getMessage());
+        refreshOptions(RESTART);
     }
 
         //  UI Hooks  \\
-    public void   print(String text) {ui.newText (text);}
-    public void   clearOptions()     {ui.clearButtons();}
-    public void   refreshOptions()   {ui.clearButtons(); ui.addMultipleBtn(listOptions());}
-    public Option buildOption(String option) {return buildOption(new Gear(option));}
+    public void   print(String text)                {ui.newText (text);}
+    public void   clearOptions()                    {ui.clearButtons();}
+    public void   refreshOptions()                  {ui.clearButtons(); ui.addMultipleBtn(listOptions());}
+    public void   refreshOptions(Option... options) {ui.clearButtons(); ui.addMultipleBtn(List.of(options));}
+    public Option buildOption(String option)        {return buildOption(new Gear(option));}
     public Option buildOption(Gear gear)
     {
         Option option = new Option(ui,gear);
