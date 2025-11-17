@@ -43,7 +43,7 @@ public class GameEngine implements Service
 
     private final Option RESTART;
     private final Option PROCEED;
-    private final Option LOOT;
+    private final Option LOOTING;
 
     private final LinkedHashMap<Turn,Turn> rounds = new LinkedHashMap<>();
     private       Entry<Turn, Turn>    lastRound;
@@ -61,7 +61,7 @@ public class GameEngine implements Service
 
         RESTART = buildOption("Restart"); // initialized in constructor to set 'ui' first.
         PROCEED = buildOption("Proceed");
-        LOOT    = buildOption("Loot");
+        LOOTING = buildOption("Loot");
 
         this.loadAdversaries(resources);
         newPlayerTemplate = templates.remove(0);    // separate player template from other characters.
@@ -86,25 +86,29 @@ public class GameEngine implements Service
     public List<Option> listOptions()
     {
         List<Option> options = new ArrayList<>();
-        if       (player   .isDead())              options.add(RESTART);
+        if       (player   .isDead()) options.add(RESTART); // main priority - the option when game is lost
         else if  (adversary.isDead())
         {
+            if (!adversary.hasStat(DEFENCE))
+            {
+                options.add(LOOTING);
+                LOOTING.setText("Loot the " + adversary.getName());
+            }
             options.add(PROCEED);
-            options.add(LOOT);
         }
-        else for (Gear gear : player.getActions()) options.add(buildOption(gear));
+        else for (Gear gear : player.getActions()) options.add(buildOption(gear)); // options for being in combat
         return options;
     }
 
     public void submitOption(Option option) // main driving 'switch' running the game
     {
-        try
+        try /// note: that it is possible to have non-API options by returning from function before 'prompt()' - just remember to print!
         {
             clearOptions();   // not actually a switch - because old systems don't support *switch(Object)*
             lastRound = null; // todo: so far 'rounds' only refer to combat, thus toss last round - it'll be set again when applicable
             if      (option.equals(RESTART)) setupNewGame();
             else if (option.equals(PROCEED)) resolveTravel(option.gear);
-            else if (option.equals(LOOT))    resolveLoot(adversary);
+            else if (option.equals(LOOTING)) resolveLoot(adversary);
             else     resolveCombat(option.gear); // default assumption for option is "combat", as the variety of combat-options is expansive
             prompt(); // prompt the ai service for a dramatization when actions have been resolved
         }
@@ -137,7 +141,12 @@ public class GameEngine implements Service
     {
         List<Gear> loot = corpse.getGear().stream().filter(Gear::isLoot).collect(Collectors.toList());
         corpse.getGear().removeAll(loot);
-        player.getGear().addAll(loot);
+        player.getGear().addAll(loot); // todo: selectable loot
+
+        // add *vigor* stat to corpse to flag as completely looted,
+        // it is a stat that is unimaginable to have inherently on a character otherwise,
+        // since such desired effect should be done using *MAX_VIGOR*
+        corpse.decrease(DEFENCE);
 
         newText("%s searches the slain body of %s, finding",player.getName(),adversary.getName());
 

@@ -28,7 +28,7 @@ public class Character
         this.description  = base.description;
         this.stats        = base.stats.clone();
         this.gear         . addAll(base.gear);
-        this.stats        . put(FATIGUE,0);
+        this.stats        . putIfAbsent(FATIGUE,0);
     }
 
     public int    roll(Stat aptitude)               {return baseRoll.rollValue(aptitude, getStat(aptitude));}
@@ -46,17 +46,19 @@ public class Character
     public boolean isDead()          {return !isAlive();}
     public boolean isArmored()       {return resolveBonus(DEFENCE) > 0;}
 
-    protected int rawStat(Stat stat) {return Optional.ofNullable(stats.getOrDefault(stat, 0)).orElse(0);}
-    protected int rawDefence()       {return rawStat(ATHLETICS) + rawStat(INTELLIGENCE);}
-    protected int rawVigor()         {return rawStat(ATHLETICS) + rawStat(WILLPOWER);}
+    public int rawStat(Stat stat) {return Optional.ofNullable(stats.getOrDefault(stat, -1)).orElse(-2);}
+    public int rawDefence()       {return rawStat(ATHLETICS) + rawStat(INTELLIGENCE);}
+    public int rawVigor()         {return rawStat(ATHLETICS) + rawStat(WILLPOWER);}
 
-    public int getStat(Stat stat)
+    public boolean hasStat(Stat stat){return stats.containsKey(stat);}
+    public int     getStat(Stat stat)
     {
         switch (stat)
         {
             case VIGOR:     return Math.max(getStat(MAX_VIGOR) - getStat(FATIGUE), 0);
             case MAX_VIGOR: return Math.max(5*(rawVigor()   + resolveBonus(ATHLETICS, WILLPOWER, MAX_VIGOR)), 5);
             case DEFENCE:   return Math.max(5+(rawDefence() + resolveBonus(ATHLETICS, INTELLIGENCE, DEFENCE)),5);
+            case GOLD:      return rawStat(GOLD); // GOLD-"bonuses" will be added when item is sold... in the future!
             default:        return             rawStat(stat)+ resolveBonus(stat);
         }
     }
@@ -82,7 +84,7 @@ public class Character
     public void increase(Stat aptitude, int amount)
     {
         if (aptitude.equals(VIGOR)) decrease(FATIGUE,amount);
-        stats.replace(aptitude, Math.max(rawStat(aptitude)+amount,0));
+        stats.put(aptitude, Math.max(rawStat(aptitude)+amount,0));
     }
 
     public void increase(Modifier... modifier) {for (Modifier m : modifier) increase(m.getStat(), m.rollValue());}

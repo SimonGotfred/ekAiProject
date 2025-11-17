@@ -23,7 +23,7 @@ public class Gear
     private Stat           aptitude;
     private List<Modifier> modifiers = new ArrayList<>();
     private short          duration  = 0;
-    private boolean        loot      = false;
+    private boolean        loot      = false; // todo: should maybe depend on whether having GOLD modifiers?
 
     public Gear(String name, Modifier... modifiers) {this(name,VIGOR);aptitude=null;}
     public Gear(String name, Stat aptitude, Modifier... modifiers)
@@ -36,6 +36,7 @@ public class Gear
     public boolean isPassive(){return !isAction();}
     public boolean isAction() {return aptitude != null;}
     public boolean isArmor()  {return !isAction() && modifiers.stream().anyMatch(modifier -> modifier.getStat().equals(DEFENCE));}
+    public boolean isItem()   {return modifiers.stream().anyMatch(modifier -> modifier.getStat().equals(GOLD));}
 
     public Turn use(Character user) {return use(user, user);}
     public Turn use(Character user, Character subject)
