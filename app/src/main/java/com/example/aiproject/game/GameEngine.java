@@ -74,7 +74,6 @@ public class GameEngine implements Service
     private void loadAdversaries(InputStream stream) {templates.addAll(List.of(new Gson().fromJson(new InputStreamReader(stream), Character[].class)));}
     private void setupNewGame()
     {
-        lastRound = null;
         player    = newPlayer();
         adversary = newAdversary();
 
@@ -97,17 +96,17 @@ public class GameEngine implements Service
         return options;
     }
 
-    public void submitOption(Option option)
+    public void submitOption(Option option) // main driving 'switch' running the game
     {
         try
         {
-            clearOptions();
-            lastRound = null;
+            clearOptions();   // not actually a switch - because old systems don't support *switch(Object)*
+            lastRound = null; // todo: so far 'rounds' only refer to combat, thus toss last round - it'll be set again when applicable
             if      (option.equals(RESTART)) setupNewGame();
             else if (option.equals(PROCEED)) resolveTravel(option.gear);
             else if (option.equals(LOOT))    resolveLoot(adversary);
-            else     resolveCombat(option.gear);
-            prompt();
+            else     resolveCombat(option.gear); // default assumption for option is "combat", as the variety of combat-options is expansive
+            prompt(); // prompt the ai service for a dramatization when actions have been resolved
         }
         catch (Throwable e) {recover(e);} // catch anything the game logic f**ks up
     }
@@ -137,6 +136,7 @@ public class GameEngine implements Service
     public void resolveLoot(Character corpse)
     {
         List<Gear> loot = corpse.getGear().stream().filter(Gear::isLoot).collect(Collectors.toList());
+        corpse.getGear().removeAll(loot);
         player.getGear().addAll(loot);
 
         newText("%s searches the slain body of %s, finding",player.getName(),adversary.getName());

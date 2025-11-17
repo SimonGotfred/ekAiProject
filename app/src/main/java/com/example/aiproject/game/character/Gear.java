@@ -15,9 +15,9 @@ import static com.example.aiproject.game.character.Stat.*;
 public class Gear
 {
     private static final StringBuilder text = new StringBuilder();
-    private static void   clearText() {text.setLength(0);}
-    private static String newText  (String text, Object... objects) {clearText(); return addText(text, objects);}
-    private static String addText  (String text, Object... objects) {return Gear.text.append(String.format(text, objects)).toString();}
+    private static void  clearText () {text.setLength(0);}
+    private static void  newText   (String text, Object... objects) {clearText(); addText(text, objects);}
+    private static void  addText   (String text, Object... objects) {Gear.text.append(String.format(text, objects));}
 
     private String         name;
     private Stat           aptitude;
@@ -25,11 +25,12 @@ public class Gear
     private short          duration  = 0;
     private boolean        loot      = false;
 
-    public Gear(String name, Modifier... modifiers)
+    public Gear(String name, Modifier... modifiers) {this(name,VIGOR);aptitude=null;}
+    public Gear(String name, Stat aptitude, Modifier... modifiers)
     {
-        this.name = name;
-        this.modifiers = List.of(modifiers);
-        duration       = -1;
+        this.name      = name;
+        this.aptitude  = aptitude;
+        this.modifiers.addAll(List.of(modifiers));
     }
 
     public boolean isPassive(){return !isAction();}
@@ -37,27 +38,27 @@ public class Gear
     public boolean isArmor()  {return !isAction() && modifiers.stream().anyMatch(modifier -> modifier.getStat().equals(DEFENCE));}
 
     public Turn use(Character user) {return use(user, user);}
-    public Turn use(Character user, Character opponent)
+    public Turn use(Character user, Character subject)
     {
         if (!this.isAction()) return new Turn(user, this);
         switch (aptitude) // todo: switch function possibly better off as child classes (Gear->Actionable->Attack/Consumable)
         {
-            case VIGOR:        return consume(user);
+            case VIGOR:        return consume(user, user);
             case ATHLETICS:
             case INTELLIGENCE:
-            case WILLPOWER:    return attack(user, opponent);
+            case WILLPOWER:    return attack(user, subject);
             default:           return new Turn(user, this); // todo: default gear use
         }
     }
 
-    private Turn attack(Character user, Character opponent)
+    private Turn attack(Character user, Character subject)
     {
         Turn turn   = new Turn(user, this);
-        int defence = opponent.getStat(DEFENCE);
+        int defence = subject.getStat(DEFENCE);
         int roll    = user.roll(aptitude);
         String dice = user.result() + " ≻ " + roll + " vs " + defence + DEFENCE.icon;
 
-        newText("Using their %s, %s rolls %d against %s's %d defence, ", name, user.name, roll, opponent.name, defence);
+        newText("Using their %s, %s rolls %d against %s's %d defence, ", name, user.name, roll, subject.name, defence);
 
         if (roll >= defence)
         {
@@ -70,21 +71,21 @@ public class Gear
                                                           modifier.getStat().equals(MAGIC)).collect(Collectors.toList()))
             {damage += mod.rollValue();dice+="+ "+mod.result(false);}
 
-            opponent.increase(FATIGUE, damage);
+            subject.increase(FATIGUE, damage);
 
             dice+=" ≻ " + damage + FATIGUE.icon;
             addText("dealing %d damage and ",damage);
 
-            if (opponent.getStat(VIGOR) < 1) addText("finally slaying %s",opponent.name);
-            else addText("bringing %s to %d/%d health.",opponent.name,opponent.getStat(VIGOR),opponent.getStat(MAX_VIGOR));
+            if (subject.getStat(VIGOR) < 1) addText("finally slaying %s",subject.name);
+            else addText("bringing %s to %d/%d health.",subject.name,subject.getStat(VIGOR),subject.getStat(MAX_VIGOR));
         }
-        else if (roll >= defence-opponent.resolveBonus(DEFENCE))
+        else if (roll >= defence-subject.resolveBonus(DEFENCE))
         {
-            addText("dealing a glancing blow to %s, but causing no significant damage.",opponent.name);
+            addText("dealing a glancing blow to %s, but causing no significant damage.",subject.name);
         }
         else
         {
-            addText("failing to hit as %s evades the attack.",opponent.name);
+            addText("failing to hit as %s evades the attack.",subject.name);
         }
 
         turn.setOutcome(text.toString());
@@ -93,12 +94,13 @@ public class Gear
         return turn;
     }
 
-    private Turn consume(Character user) // todo: consumable gear functionality
+    private Turn consume(Character user, Character subject)
     {
-        Turn turn = new Turn(user, this);
+        Turn turn = new Turn(subject, this);
         newText("%s consumes one %s, ", user.name, name);
 
-        user.increase(modifiers.toArray(new Modifier[]{}));
+        subject.increase(modifiers.toArray(new Modifier[]{}));
+        user.remove(this);
 
         turn.setOutcome(text.toString());
         turn.setDiceThrow(result());
