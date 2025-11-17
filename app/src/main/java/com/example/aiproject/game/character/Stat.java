@@ -20,7 +20,7 @@ public enum Stat
 
     GOLD     ("💰");
 
-    final String icon;
+    public final String icon;
 
     Stat(String icon){this.icon=icon;}
 }

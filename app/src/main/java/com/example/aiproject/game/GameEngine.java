@@ -32,21 +32,37 @@ public class GameEngine implements Service
     private void  addText(String text, Object... objects) {this.text.append(String.format(text,objects));}
     private void  prompt(){prompt(promptInstructions + text); clearText();}
     private final StringBuilder text      = new StringBuilder();
-    public  final static String separator =
-              "⊱⟢༻"
-            + "                                         "
-            + "༺⟣⊰"; // f**king nothing allow me to justify these two elements to either side of the screen, not even WebView worked what the f**k!
+    public  final static String promptInstructions =
+       "Dramatically describe how the following scene plays out in 2-4 sentences using present tense, "
+     + "always refer to the player as 'you', and do NOT mention specific numbers or stats:\n";
 
-    public  final String        promptInstructions =
-            "Dramatically describe how the following scene play out in 2-4 sentences using present tense, "
-          + "always refer to the player as 'you', and do NOT mention specific numbers or stats:\n";
+    public  final static String paragraphAccent =
+       "⊱⟢༻"
+     + "                                         "
+     + "༺⟣⊰"; // nothing allows me to justify these two elements to either side of the screen, not even WebView worked, I've wasted 3 hours!
+
+    public  final static String introText =
+       "<h5 style=\"text-align: center\"> <br>"+ paragraphAccent +"</h5>"
+     + "<p>Hello and welcome adventurer, will you dare to delve into the dungeon?</p>"
+     + "<h5 style=\"text-align: center\">"+ paragraphAccent +"</h5>"
+     + "<p>"+ATHLETICS.icon   +"<b>Athletics:</b> Represents your strength, agility and overall physical health.</p>"
+     + "<p>"+INTELLIGENCE.icon+"<b>Intelligence:</b> Represents your insight, alertness and how knowledgeable you are of the world.</p>"
+     + "<p>"+WILLPOWER.icon   +"<b>Willpower:</b> Represents your resolve, discipline and your ability to assert yourself.</p>"
+     + "<p>"+MAX_VIGOR.icon   +"<b>Vigor:</b> How far you are from dying is a combination of your <i>Athletics</i> and <i>Willpower</i>.</p>"
+     + "<p>"+DEFENCE.icon     +"<b>Defence:</b> How difficult you are to hit is a combination of your <i>Athletics</i> and <i>Intelligence</i>.</p>"
+     + "<p>"
+     + "<b>Weapons:</b> Your ability to wield a weapon depends on the weapons type."
+     + "<br>"+MELEE.icon +"<i>Melee</i> depends on your <i>Athletics</i>."
+     + "<br>"+RANGED.icon+"<i>Ranged</i> depends on your <i>Intelligence</i>."
+     + "<br>"+MAGIC.icon +"<i>Magic</i> depends on your <i>Willpower</i>."
+     + "</p>";
 
     private final Option RESTART;
     private final Option PROCEED;
     private final Option LOOTING;
 
     private final LinkedHashMap<Turn,Turn> rounds = new LinkedHashMap<>();
-    private       Entry<Turn, Turn>    lastRound;
+    private       Entry<Turn,Turn>         lastRound;
 
     private final RollableList<Gear>      loot      = new RollableList<>();
     private final RollableList<Character> templates = new RollableList<>();
@@ -67,8 +83,7 @@ public class GameEngine implements Service
         newPlayerTemplate = templates.remove(0);    // separate player template from other characters.
         loot.addAll(templates.remove(0).getGear()); // extract loot-table, and discard Loot-Bug template.
 
-        print("<h5 style=\"text-align: center\"> <br>"+ separator +"</h5>"
-            + "<p>Hello and welcome adventurer, will you dare to delve into the dungeon?</p>");
+        print(introText);
     }
 
     private void loadAdversaries(InputStream stream) {templates.addAll(List.of(new Gson().fromJson(new InputStreamReader(stream), Character[].class)));}
@@ -190,7 +205,7 @@ public class GameEngine implements Service
         {
             newText("<h5 style=\"text-align: center\">%s<br>%s</h5>"
                        + "<p>%s</p>"
-                       + "<p>%s</p>", statBar(), separator, response.getText(), result());
+                       + "<p>%s</p>", statBar(), paragraphAccent, response.getText(), result());
             print(text.toString());
             refreshOptions();
         }
