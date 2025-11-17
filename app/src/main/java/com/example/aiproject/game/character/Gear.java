@@ -32,6 +32,7 @@ public class Gear
         duration       = -1;
     }
 
+    public boolean isPassive(){return !isAction();}
     public boolean isAction() {return aptitude != null;}
     public boolean isArmor()  {return !isAction() && modifiers.stream().anyMatch(modifier -> modifier.getStat().equals(DEFENCE));}
 

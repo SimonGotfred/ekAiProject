@@ -31,7 +31,9 @@ public class GameEngine implements Service
     private void  addText(String text, Object... objects) {this.text.append(String.format(text,objects));}
     private void  prompt(){prompt(promptInstructions + text); clearText();}
     private final StringBuilder text = new StringBuilder();
-    public  final static String seperator = "\n_________________________________________";
+    public  final static String seperator =
+            "⊱⟢༻                                        "
+                    + "༺⟣⊰";
     public  final String        promptInstructions =
             "Dramatically describe how the following scene play out in 2-4 sentences using present tense, "
           + "always refer to the player as 'you', and do NOT mention specific numbers or stats:\n";
@@ -126,25 +128,22 @@ public class GameEngine implements Service
     private Character newAdversary() {return   new Character(templates.getRandom());        }
     private Player    newPlayer()    {player = new Player(newPlayerTemplate); return player;}
 
-    public String statBar(){return writeStats(GOLD, VIGOR, DEFENCE, ATHLETICS, INTELLIGENCE, WILLPOWER);}
-
     public String result(){return resultOf(lastRound);}
-    public String resultOf(Turn turn){return turn.getActor()+":\t"+turn.getDiceThrow();}
+    public String resultOf(Turn turn){return turn.result();}
     public String resultOf(Entry<Turn,Turn> round)
     {
         if (round == null) return "";
-        String text = resultOf(round.getKey());
-        if (round.getValue()!=null) text += seperator + "</p>" + resultOf(round.getValue()) + "<p>";
+        String text = round.getKey().result();
+        if (round.getValue()!=null) text += "</p><p>" + round.getValue().result();
         return text;
     }
 
+    public String statBar(){return writeStats(GOLD, VIGOR, DEFENCE, ATHLETICS, INTELLIGENCE, WILLPOWER);}
     public String writeStats(Stat... stats)
     {
         text.setLength(0);
-        text.append("<p>\t\t\t");
         for (Stat stat : stats) {text.append(player.writeStat(stat)).append("\t\t");}
-        text.append(seperator + "</p>");
-        return text.toString();
+        return text.toString().trim();
     }
 
     @Override
@@ -152,7 +151,10 @@ public class GameEngine implements Service
     {
         try
         {
-            newText("%s<p>%s</p><p>%s</p>", statBar(), response.getText(), result());
+            newText("<h5 style=\"text-align: center\">%s<br>%s</h5>"
+                       + "<div>%s</div>"
+                       + "<h5 style=\"text-align: center\">%s</h5>"
+                       + "<p>%s</p>", statBar(), seperator, response.getText(), seperator, result());
             print(text.toString());
             refreshOptions();
         }
@@ -174,8 +176,7 @@ public class GameEngine implements Service
     public Option buildOption(Gear gear)
     {
         Option option = new Option(ui,gear);
-        option.setOnClickListener(ui ->
-                                          submitOption(option));
+        option.setOnClickListener(ui -> submitOption(option));
         return option;
     }
 }

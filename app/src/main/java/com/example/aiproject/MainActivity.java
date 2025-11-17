@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity
     public   void clearText()          {setText("");}
     public   void newText(String text) {setText("<p>" + text + "</p>");}
     public   void addText(String text) {setText("<p>" + getText() + "</p><p>" + text + "</p>");}
-    private  void setText(String text) {runOnUiThread(()  ->   textView.setText(Html.fromHtml(text)));}
+    private  void setText(String text) {runOnUiThread(()  ->   textView.setText(Html.fromHtml("<body>"+text+"</body>")));}
     public String getText()            {return Html.escapeHtml(textView.getText());}
 
     public void onButton(View view) // initial start-button
