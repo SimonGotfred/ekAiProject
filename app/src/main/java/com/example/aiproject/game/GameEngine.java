@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import static com.example.aiproject.game.character.Stat.*;
 
@@ -31,15 +32,16 @@ public class GameEngine implements Service
     private void  addText(String text, Object... objects) {this.text.append(String.format(text,objects));}
     private void  prompt(){prompt(promptInstructions + text); clearText();}
     private final StringBuilder text = new StringBuilder();
-    public  final static String seperator =
-            "⊱⟢༻                                        "
+    public  final static String seperator = "⊱⟢༻                                   "
           + "༺⟣⊰"; // f**king nothing allow me to justify these two elements to either side of the screen, not even WebView worked what the f**k!
+
     public  final String        promptInstructions =
             "Dramatically describe how the following scene play out in 2-4 sentences using present tense, "
           + "always refer to the player as 'you', and do NOT mention specific numbers or stats:\n";
 
     private final Option RESTART;
     private final Option PROCEED;
+    private final Option LOOT;
 
     private final LinkedHashMap<Turn,Turn> rounds = new LinkedHashMap<>();
     private       Entry<Turn, Turn>    lastRound;
@@ -57,15 +59,17 @@ public class GameEngine implements Service
 
         RESTART = buildOption("Restart"); // initialized in constructor to set 'ui' first.
         PROCEED = buildOption("Proceed");
+        LOOT    = buildOption("Loot");
 
         this.loadAdversaries(resources);
         newPlayerTemplate = templates.remove(0); // separate player template from other characters.
+
+        print("<h5 style=\"text-align: center\"> <br>"+seperator
+                      +"</h5><p>Hello and welcome adventurer, will you dare to delve into the dungeon?</p>"
+                      +"<h5 style=\"text-align: center\">"+seperator+"<h5>");
     }
 
-    public void loadAdversaries(InputStream stream)
-    {
-        templates.addAll(List.of(new Gson().fromJson(new InputStreamReader(stream), Character[].class)));
-    }
+    public void loadAdversaries(InputStream stream) {templates.addAll(List.of(new Gson().fromJson(new InputStreamReader(stream), Character[].class)));}
 
     public void start()
     {
@@ -83,7 +87,11 @@ public class GameEngine implements Service
     {
         List<Option> options = new ArrayList<>();
         if       (player   .isDead())              options.add(RESTART);
-        else if  (adversary.isDead())              options.add(PROCEED);
+        else if  (adversary.isDead())
+        {
+            options.add(PROCEED);
+            options.add(LOOT);
+        }
         else for (Gear gear : player.getActions()) options.add(buildOption(gear));
         return options;
     }
@@ -95,6 +103,7 @@ public class GameEngine implements Service
             clearOptions();
             if      (option.equals(RESTART)) start();
             else if (option.equals(PROCEED)) resolveTravel(option.gear);
+            else if (option.equals(LOOT))    resolveLoot(adversary);
             else     resolveCombat(option.gear);
             prompt();
         }
@@ -108,6 +117,14 @@ public class GameEngine implements Service
         return adversary.act(player);
     }
 
+    public void resolveTravel(Gear gear)
+    {
+        lastRound = null;
+        adversary = newAdversary();
+        newText("%s ventures deeper into the dungeon, encountering a %s in the next room, bent on fighting them.",
+                player.getName(), adversary.getName());
+    }
+
     public void resolveCombat(Gear gear)
     {
         rounds.put(gear.use(player, adversary), adversaryAction(adversary));
@@ -117,12 +134,11 @@ public class GameEngine implements Service
         if (adversary.isAlive()) addText("\nMeanwhile " + lastRound.getValue().getOutcome());
     }
 
-    public void resolveTravel(Gear gear)
+    public void resolveLoot(Character corpse)
     {
-        lastRound = null;
-        adversary = newAdversary();
-        newText("%s ventures deeper into the dungeon, encountering a %s in the next room, bent on fighting them.",
-                player.getName(), adversary.getName());
+        List<Gear> loot = corpse.getGear().stream().filter(Gear::isLoot).collect(Collectors.toList());
+
+        if (loot.isEmpty()) return;
     }
 
     private Character newAdversary() {return   new Character(templates.getRandom());        }
