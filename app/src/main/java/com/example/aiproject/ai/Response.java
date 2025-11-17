@@ -16,6 +16,8 @@ public class Response {
 
     private Message message; // the message that prompted this response
 
+    public Response(String responseId){this.responseId = responseId;}
+
     // shortcuts to what is usually wanted
     public String getText()  {return candidates.get(0).content.parts.get(0).text;}
     public String getPrompt(){return message.prompt;}

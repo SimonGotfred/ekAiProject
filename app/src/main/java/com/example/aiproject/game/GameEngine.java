@@ -25,6 +25,7 @@ import static com.example.aiproject.game.character.Stat.*;
 
 public class GameEngine implements Service
 {
+    private final boolean   useAi = false;
     private final MainActivity ui;
 
     private void  clearText(){text.setLength(0);}
@@ -125,7 +126,8 @@ public class GameEngine implements Service
             else if (option.equals(PROCEED)) resolveTravel(option.gear);
             else if (option.equals(LOOTING)) resolveLoot(adversary);
             else     resolveCombat(option.gear); // default assumption for option is "combat", as the variety of combat-options is expansive
-            prompt(); // prompt the ai service for a dramatization when actions have been resolved
+            if (useAi) prompt(); // prompt the ai service for a dramatization when actions have been resolved
+            else onServiceResponse(new Response(text.toString()));
         }
         catch (Throwable e) {recover(e);} // catch anything the game logic f**ks up
     }
@@ -203,9 +205,10 @@ public class GameEngine implements Service
     {
         try
         {
+            String s = useAi ? response.getText() : response.getResponseId();
             newText("<h5 style=\"text-align: center\">%s<br>%s</h5>"
                        + "<p>%s</p>"
-                       + "<p>%s</p>", statBar(), paragraphAccent, response.getText(), result());
+                       + "<p>%s</p>", statBar(), paragraphAccent, s, result());
             print(text.toString());
             refreshOptions();
         }
@@ -214,7 +217,7 @@ public class GameEngine implements Service
 
     private void recover(Throwable e)
     {
-        print(e.getMessage());
+        print(e.getLocalizedMessage());
         refreshOptions(RESTART);
     }
 

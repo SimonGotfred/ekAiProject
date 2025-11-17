@@ -1,5 +1,7 @@
 This application is a *very* rudementary fighting game, narrated by Google's Gemini AI to add flavor to events which has "samey" descriptions in traditional games of the type.
 
+I have add a boolean 'useAi' to "easily" switch the games text from being sourced from the API to the barebones text prompt constructed by app itself. Flipping this can give a demonstration of how *dull* the game feels without the flavoring done by Ai.
+
 The application itself keeps track of characters and stats, though with minimal descriptors as *that* is the main purpose of the AI.
 
 According to Gemini's [Documentation](https://ai.google.dev/gemini-api/docs/structured-output?example=recipe) it should be very feasible to ask more of the AI - such as filling out templates for character types, gear, or locations - or building on to templates for establishing fleshed out role-playing characters or even scenarios.
