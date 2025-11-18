@@ -9,6 +9,7 @@ import com.example.aiproject.game.character.Character;
 import com.example.aiproject.game.character.Player;
 import com.example.aiproject.game.character.Stat;
 import com.example.aiproject.game.character.Gear;
+import com.example.aiproject.game.location.Location;
 import com.example.aiproject.game.tool.RollableList;
 
 import com.google.gson.Gson;
@@ -47,9 +48,9 @@ public class GameEngine implements AiService
      + "༺⟣⊰"; // nothing allows me to justify these two elements to either side of the screen, not even WebView worked, I've wasted 3 hours!
 
     public  final static String introText =
-       "<h5 style=\"text-align: center\"> <br>"+ paragraphAccent +"</h5>"
+       "<h6 style=\"text-align: center\"> <br>"+ paragraphAccent +"</h6>"
      + "<p>Hello and welcome adventurer, will you dare to delve into the dungeon?</p>"
-     + "<h5 style=\"text-align: center\">"+ paragraphAccent +"</h5>"
+     + "<h6 style=\"text-align: center\">"+ paragraphAccent +"</h6>"
      + "<p>"+ATHLETICS.icon   +"<b>Athletics:</b> Represents your strength, agility and overall physical health.</p>"
      + "<p>"+INTELLIGENCE.icon+"<b>Intelligence:</b> Represents your insight, alertness and how knowledgeable you are of the world.</p>"
      + "<p>"+WILLPOWER.icon   +"<b>Willpower:</b> Represents your resolve, discipline and your ability to assert yourself.</p>"
@@ -72,30 +73,35 @@ public class GameEngine implements AiService
     private       Entry<Turn,Turn>         lastRound;
 
     // templates and base game elements, to be referenced by or copied into an active game.
-    private final RollableList<Gear>      loot      = new RollableList<>();
-    private final RollableList<Character> templates = new RollableList<>();
-    private final Character newPlayerTemplate;
+    private final RollableList<Gear>      lootTable         = new RollableList<>();
+    private final RollableList<Location>  locationTemplates = new RollableList<>();
+    private final RollableList<Character> charTemplates     = new RollableList<>();
+    private final Character               newPlayerTemplate;
 
     // game elements present in currently active game
+    private       Location  location;
     private       Character adversary;
     private       Player    player;
 
-    public GameEngine(MainActivity mainActivity, InputStream resources)
+    public GameEngine(MainActivity mainActivity, InputStream charResource, InputStream locationResource)
     {
-        this.ui = mainActivity;
+        ui = mainActivity;
 
         RESTART = buildOption("Restart"); // initialized in constructor to set 'ui' first.
         PROCEED = buildOption("Proceed");
         LOOTING = buildOption("Loot");
 
-        this.loadAdversaries(resources);
-        newPlayerTemplate = templates.remove(0);    // separate player template from other characters.
-        loot.addAll(templates.remove(0).getGear()); // extract loot-table, and discard Loot-Bug template.
+        loadLocations(locationResource);
+        loadCharacters(charResource);
+
+        newPlayerTemplate = charTemplates.remove(0);    // separate player template from other characters.
+        lootTable.addAll(charTemplates.remove(0).getGear()); // extract loot-table, and discard Loot-Bug template.
 
         print(introText);
     }
 
-    private void loadAdversaries(InputStream stream) {templates.addAll(List.of(new Gson().fromJson(new InputStreamReader(stream), Character[].class)));}
+    private void loadCharacters(InputStream stream) {charTemplates.addAll(new Gson().fromJson(new InputStreamReader(stream), Character[].class));}
+    private void loadLocations(InputStream stream)  {locationTemplates.addAll(new Gson().fromJson(new InputStreamReader(stream), Location[].class));}
     private void setupNewGame()
     {
         player    = newPlayer();
@@ -146,6 +152,13 @@ public class GameEngine implements AiService
         return adversary.act(player);
     }
 
+    private void updateRounds(Turn playerTurn) {updateRounds(playerTurn, null);}
+    private void updateRounds(Turn playerTurn, Turn adversaryTurn)
+    {
+        rounds.put(playerTurn, adversaryTurn);
+        rounds.entrySet().iterator().forEachRemaining(round -> lastRound = round); // 'getLast()' don't exist on old systems
+    }
+
     public void resolveTravel(Gear gear)
     {
         adversary = newAdversary();
@@ -155,8 +168,7 @@ public class GameEngine implements AiService
 
     public void resolveCombat(Gear gear)
     {
-        rounds.put(gear.use(player, adversary), adversaryAction(adversary));
-        rounds.entrySet().iterator().forEachRemaining(round -> lastRound = round); // 'getLast()' don't exist on old systems
+        updateRounds(gear.use(player, adversary), adversaryAction(adversary));
 
         newText(lastRound.getKey().getOutcome());
         if (adversary.isAlive()) addText("\nMeanwhile " + lastRound.getValue().getOutcome());
@@ -185,8 +197,8 @@ public class GameEngine implements AiService
     private Player    newPlayer()    {player = new Player(newPlayerTemplate); return player;}
     private Character newAdversary()
     {
-        Character adversary = new Character(templates.getRandom());
-        adversary.add(loot.getRandom());
+        Character adversary = new Character(charTemplates.getRandom());
+        adversary.add(lootTable.getRandom());
         return adversary;
     }
 
@@ -214,7 +226,7 @@ public class GameEngine implements AiService
         try
         {
             String s = useAi ? response.getText() : response.getResponseId();
-            newText("<h5 style=\"text-align: center\">%s<br>%s</h5>"
+            newText("<h6 style=\"text-align: center\">%s<br>%s</h6>"
                        + "<p>%s</p>"
                        + "<p>%s</p>", statBar(), paragraphAccent, s, result());
             print(text.toString());
