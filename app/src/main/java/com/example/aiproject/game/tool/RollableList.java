@@ -1,12 +1,21 @@
 package com.example.aiproject.game.tool;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 
 public class RollableList<T> extends ArrayList<T>
 {
     private static final  Random r = new Random();
     private int rIndex() {return r.nextInt(size());}
+
+    public RollableList(){}
+    public RollableList(T... t){this(List.of(t));} // seriously - why are these two not part of 'List' by default
+    public RollableList(Collection<T> list){addAll(list);}
+
+    @SafeVarargs
+    public final boolean addAll(T... t) {return addAll(List.of(t));} // same with this
 
     public T getRandom()
     {

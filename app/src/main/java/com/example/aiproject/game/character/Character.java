@@ -3,6 +3,7 @@ package com.example.aiproject.game.character;
 import com.example.aiproject.game.Turn;
 import com.example.aiproject.game.tool.Dice;
 import com.example.aiproject.game.RandomSuite;
+import com.example.aiproject.game.tool.RollableList;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -19,8 +20,8 @@ public class Character
     private static final Modifier baseRoll = new Modifier(2, Dice.d10);
 
     @Getter protected String name, description;
-    @Getter protected List<Gear>     gear  = new ArrayList<>();
-    protected EnumMap<Stat, Integer> stats = new EnumMap<>(Stat.class);
+    @Getter protected RollableList<Gear>     gear  = new RollableList<>();
+    protected         EnumMap<Stat, Integer> stats = new EnumMap<>(Stat.class);
 
     public Character(Character base)
     {
@@ -34,13 +35,13 @@ public class Character
     public int    roll(Stat aptitude)               {return baseRoll.rollValue(aptitude, getStat(aptitude));}
     public String result()                          {return baseRoll.result(false);}
 
-    public Gear act()                               {return RandomSuite.oneOf(this.getActions());}
+    public Gear act()                               {return this.getActions().getRandom();}
     public Turn act(Character adversary)            {return act().use(this, adversary);} // todo: catch if no gear
 
     public Turn use(Gear gear, Character adversary) {return gear.use(this, adversary);}
     public Turn use(Gear gear)                      {return gear.use(this, this);}
 
-    public List<Gear> getActions(){return gear.stream().filter(Gear::isAction).collect(Collectors.toList());}
+    public RollableList<Gear> getActions(){return new RollableList<>(gear.stream().filter(Gear::isAction).collect(Collectors.toList()));}
 
     public boolean isAlive()         {return getStat(VIGOR) > 0;}
     public boolean isDead()          {return !isAlive();}
