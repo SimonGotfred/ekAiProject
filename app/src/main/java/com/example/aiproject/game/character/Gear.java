@@ -23,8 +23,8 @@ public class Gear // todo: separate "Action" from "Gear"
     protected String         description;
     protected Stat           aptitude;
     protected List<Modifier> modifiers = new ArrayList<>();
-    protected short          duration  = 0;
-    protected boolean        loot      = false; // todo: should maybe depend on whether having GOLD modifiers?
+    protected short          duration = 0;
+    protected boolean        isLoot     = false; // todo: should maybe depend on whether having GOLD modifiers?
 
     public Gear(String name, Modifier... modifiers) {this(name,VIGOR);aptitude=null;}
     public Gear(String name, Stat aptitude, Modifier... modifiers)
@@ -33,6 +33,8 @@ public class Gear // todo: separate "Action" from "Gear"
         this.aptitude  = aptitude;
         this.modifiers.addAll(List.of(modifiers));
     }
+
+    public String getDescription(){return description.isEmpty() ? name : description;}
 
     public boolean isPassive(){return !isAction();}
     public boolean isAction() {return aptitude != null;}
@@ -60,7 +62,7 @@ public class Gear // todo: separate "Action" from "Gear"
         int roll    = user.roll(aptitude);
         String dice = user.result() + " ≻ " + roll + " vs " + defence + DEFENCE.icon;
 
-        newText("Using their %s, %s rolls %d against %s's %d defence, ", name, user.name, roll, subject.name, defence);
+        newText("using their %s, %s rolls %d against %s's %d defence, ", name, user.getName(), roll, subject.getName(), defence);
 
         if (roll >= defence)
         {
@@ -78,16 +80,16 @@ public class Gear // todo: separate "Action" from "Gear"
             dice+=" ≻ " + damage + FATIGUE.icon;
             addText("dealing %d damage and ",damage);
 
-            if (subject.getStat(VIGOR) < 1) addText("finally slaying %s",subject.name);
-            else addText("bringing %s to %d/%d health.",subject.name,subject.getStat(VIGOR),subject.getStat(MAX_VIGOR));
+            if (subject.getStat(VIGOR) < 1) addText("finally slaying %s",subject.getName());
+            else addText("bringing %s to %d/%d health.",subject.getName(),subject.getStat(VIGOR),subject.getStat(MAX_VIGOR));
         }
         else if (roll >= defence-subject.resolveBonus(DEFENCE))
         {
-            addText("dealing a glancing blow to %s, but causing no significant damage.",subject.name);
+            addText("dealing a glancing blow to %s, but causing no significant damage.",subject.getName());
         }
         else
         {
-            addText("failing to hit as %s evades the attack.",subject.name);
+            addText("failing to hit as %s evades the attack.",subject.getName());
         }
 
         turn.setOutcome(text.toString());
@@ -99,7 +101,7 @@ public class Gear // todo: separate "Action" from "Gear"
     private Turn consume(Character user, Character subject)
     {
         Turn turn = new Turn(subject, this);
-        newText("%s consumes one %s, ", user.name, name);
+        newText("%s consumes a %s, ", user.getName(), name);
 
         subject.increase(modifiers.toArray(new Modifier[]{}));
         user.remove(this);

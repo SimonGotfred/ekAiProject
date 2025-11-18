@@ -102,4 +102,10 @@ public class Character
             default:    return getStat(stat) + stat.icon;
         }
     }
+
+    public String getName(){return "the "+name;}
+    public String toString()
+    {
+        return name;
+    }
 }

@@ -17,6 +17,7 @@ import com.google.gson.Gson;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -61,9 +62,9 @@ public class GameEngine implements AiService
             "Dramatically describe how the following scene plays out in 2-4 sentences using present tense, " +
             "always refer to the player as 'you', and do NOT mention specific numbers or stats.\n";
 
-    public  final static String scenePrompt =
-            "The scene takes place in %s with %d exits, and involves %s%s. " +
-            "Feel free to involve any supposed elements from the environment\n";
+    public  final static String scenePrompt = "Feel free to involve any supposed elements from the environment.\n";
+    public  final static String sceneDescription = "The scene takes place in a %s with %d exits, it involves the %s%s. %s";
+
 
     // initialized in constructor in order to set 'ui' first, otherwise would be made static
     private final Option RESTART;
@@ -97,30 +98,27 @@ public class GameEngine implements AiService
         loadLocations(locationResource);
         loadCharacters(charResource);
 
-        EXIT = locationTemplates.remove(0);                  // separate special 'static' location *EXIT* to only put at the start of each newly generated dungeon
         newPlayerTemplate = charTemplates.remove(0);         // separate player template from other characters.
         lootTable.addAll(charTemplates.remove(0).getGear()); // extract loot-table, and discard Loot-Bug template.
+        EXIT = locationTemplates.remove(0);                  // separate special 'static' location *EXIT* to only put at the start of each newly generated dungeon
+        EXIT.setAdjoined(new HashMap<>());
+        Location.current = location = EXIT;
 
         print(introText);
     }
 
+    public void start() {submitOption(RESTART);}
+
     private void loadCharacters(InputStream stream) {charTemplates.addAll(new Gson().fromJson(new InputStreamReader(stream), Character[].class));}
     private void loadLocations(InputStream stream)  {locationTemplates.addAll(new Gson().fromJson(new InputStreamReader(stream), Location[].class));}
     private void setupNewGame()
-    {
+    {;
         player    = newPlayer();
-        location  = newLocation();
-        adversary = newAdversary();
+        resolveTravel(newLocation(EXIT));
 
-        Location.current = location;
-        Location.current . addPath(EXIT);
-
-        newText(scenePrompt,location.getDescription(),location.getAdjoined().size());
-        newText("%s enters the dungeon and encounters a %s, bent on fighting them.",
-                player.getName(), adversary.getName());
+        describeScene();
+        addText("The %s enters the dungeon and encounters %s, bent on fighting %s.",player.getName(), adversary.getName(),player.getName());
     }
-
-    public void start() {submitOption(RESTART);}
 
     public List<Option> listOptions()
     {
@@ -131,7 +129,7 @@ public class GameEngine implements AiService
             if (!adversary.hasStat(DEFENCE))
             {
                 options.add(LOOTING);
-                LOOTING.setText("Loot the " + adversary.getName());
+                LOOTING.setText("Loot " + adversary.getName());
             }
             for (Location location : location.getAdjoined().keySet()) options.add(buildOption(location));
         }
@@ -140,17 +138,18 @@ public class GameEngine implements AiService
     }
 
     public void submitOption(Option option) // main driving 'switch' running the game
-    {
+    {                                       // not actually a switch - because old systems don't support *switch(Object)*
         try /// note: that it is possible to have non-API options by returning from function before 'prompt()' - just remember to print!
         {
-            clearOptions();   // not actually a switch - because old systems don't support *switch(Object)*
+            clearText();
+            if (!option.equals(RESTART)) describeScene();
             lastRound = null; // todo: so far 'rounds' only refer to combat, thus toss last round - it'll be set again when applicable
             if      (option.equals(RESTART)) setupNewGame();
             else if (location.getAdjoined() .containsKey(option.gear)) resolveTravel((Location) option.gear);
             else if (option.equals(LOOTING)) resolveLoot(adversary);
             else     resolveCombat(option.gear); // default assumption for option is "combat", as the variety of combat-options is expansive
             if (useAi) prompt(); // prompt the ai service for a dramatization when actions have been resolved
-            else onServiceResponse(new Response(text.toString()));
+            else onServiceResponse(new Response(text.replace(text.indexOf(scenePrompt),text.indexOf(scenePrompt)+scenePrompt.length(),"<br>").toString()));
         }
         catch (Throwable e) {recover(e);} // catch anything the game logic f**ks up
     }
@@ -171,16 +170,18 @@ public class GameEngine implements AiService
     public void resolveTravel(Location location)
     {
         Location.current = this.location = location;
-        adversary = newAdversary();
-        newText("%s steps into the %s, encountering a %s, bent on fighting them.",
-                player.getName(), location.getName(), adversary.getName());
+        location.generateFull(locationTemplates,charTemplates,lootTable);
+        adversary = newAdversary(); // todo
+        describeScene();
+        addText("%s steps into the %s, encountering %s, bent on fighting %s.",
+                player.getName(), location.getName(), adversary.getName(), player.getName());
     }
 
     public void resolveCombat(Gear gear)
     {
         updateRounds(gear.use(player, adversary), adversaryAction(adversary));
 
-        newText(lastRound.getKey().getOutcome());
+        addText(lastRound.getKey().getOutcome());
         if (adversary.isAlive()) addText("\nMeanwhile " + lastRound.getValue().getOutcome());
     }
 
@@ -195,7 +196,7 @@ public class GameEngine implements AiService
         // since such desired effect should be done using *MAX_VIGOR*
         corpse.decrease(DEFENCE);
 
-        newText("%s searches the slain body of %s, finding",player.getName(),adversary.getName());
+        addText("%s searches the slain body of %s, finding",player.getName(),adversary.getName());
 
         if (loot.isEmpty()) {addText(" nothing of value.");return;}
         for (Gear gear:loot) addText(" a %s,",gear.getName());
@@ -204,15 +205,19 @@ public class GameEngine implements AiService
         text.deleteCharAt(text.length()-1).append('.');
     }
 
+    public String describeScene()
+    {
+        newText(sceneDescription, location.getDescription(),
+                location.getAdjoined().size(), player.toString(),
+                " and a "+adversary.toString(),scenePrompt);
+        return text.toString();
+    }
+
     private Player    newPlayer() {player = new Player(newPlayerTemplate); return player;}
-    private Location  newLocation()
+    private Location  newLocation(Location path)
     {
         Location location = new Location(new RollableList<>(locationTemplates.stream().filter(template -> template.getMinPaths() > 1).collect(Collectors.toList())).getRandom());
-        location.generateFull();
-        if (location.getAdjoined().size()<location.getMinPaths()) location.generatePaths(locationTemplates);
-        if (location.getCharacters()==null) location.generateCharacters(charTemplates);
-        if (location.getGear()==null)       location.generateLoot      (lootTable);
-        // todo: characters and loot should be allowed to be empty!
+        location.addPath(path);
         return location;
     }
 

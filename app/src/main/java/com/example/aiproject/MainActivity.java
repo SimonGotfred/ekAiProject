@@ -47,7 +47,9 @@ public class MainActivity extends AppCompatActivity
         resources  = getResources();
 
         try {game = new GameEngine(this, resources.openRawResource(R.raw.character_templates), resources.openRawResource(R.raw.location_templates));}
-        catch (Exception e) {throw new RuntimeException(e);}
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public   void clearText()          {setText("");}

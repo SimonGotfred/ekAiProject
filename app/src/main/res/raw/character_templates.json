@@ -1,7 +1,7 @@
 [
   {
-    "name": "The Player",
-    "description": "You are an up-and-coming adventurer.",
+    "name": "player",
+    "description": "spry, up-and-coming adventurer",
     "stats":
     {
       "ATHLETICS":    3,
@@ -11,7 +11,7 @@
     "gear":
     [
       {
-        "name": "Rusty Sword",
+        "name": "rusty sword",
         "aptitude": "ATHLETICS",
         "modifiers":
         [
@@ -24,7 +24,7 @@
       },
       {
         "loot": true,
-        "name": "Health Potion",
+        "name": "health potion",
         "aptitude": "VIGOR",
         "duration": 1,
         "modifiers":
@@ -41,12 +41,12 @@
   },
   {
     "name": "Loot-Bug",
-    "description": "Char holding the list of bonus-loot for distribution to adversaries",
+    "description": "Char holding the list of bonus-loot for distribution to adversaries.",
     "gear":
     [
       {
         "loot": true,
-        "name": "Heavy Helmet",
+        "name": "heavy helmet",
         "modifiers":
         [
           {
@@ -61,7 +61,7 @@
       },
       {
         "loot": true,
-        "name": "Health Potion",
+        "name": "health potion",
         "aptitude": "VIGOR",
         "duration": 1,
         "modifiers":
@@ -76,7 +76,7 @@
       },
       {
         "loot": true,
-        "name": "Gold Pouch",
+        "name": "gold pouch",
         "duration": 1,
         "modifiers":
         [
@@ -91,11 +91,11 @@
     ]
   },
   {
-    "name": "Goblin",
-    "description": "A scrawny goblin with an improvised weapon.",
+    "name": "goblin",
+    "description": "gangly goblin with an improvised club",
     "stats":
     {
-      "ATHLETICS":    3,
+      "ATHLETICS":    2,
       "INTELLIGENCE": 3,
       "WILLPOWER":    2
     },
@@ -109,15 +109,15 @@
           {
             "stat": "MELEE",
             "rolls": 1,
-            "dice": "d8"
+            "dice": "d4"
           }
         ]
       }
     ]
   },
   {
-    "name": "Amateur Guard",
-    "description": "A simple guard with shabby equipment.",
+    "name": "dour guard",
+    "description": "rowdy guard with simple equipment",
     "stats":
     {
       "ATHLETICS":    3,
@@ -127,7 +127,7 @@
     "gear":
     [
       {
-        "name": "Dull Spear",
+        "name": "dull spear",
         "aptitude": "ATHLETICS",
         "modifiers":
         [
@@ -140,7 +140,7 @@
       },
       {
         "loot": true,
-        "name": "Cumbersome Chainmail",
+        "name": "cumbersome chainmail",
         "modifiers":
         [
           {
@@ -156,8 +156,8 @@
     ]
   },
   {
-    "name": "Elf",
-    "description": "A slender elf with stoic poise.",
+    "name": "elf",
+    "description": "slender elf with stoic poise",
     "stats":
     {
       "ATHLETICS":    2,
@@ -183,8 +183,8 @@
     ]
   },
   {
-    "name": "Novice Sorcerer",
-    "description": "A man studying the fabric of what makes the world.",
+    "name": "novice sorcerer",
+    "description": "man studying the fabric of what makes the world",
     "stats":
     {
       "ATHLETICS":    1,
@@ -194,7 +194,7 @@
     "gear":
     [
       {
-        "name": "Flame Spell",
+        "name": "flame spell",
         "aptitude": "WILLPOWER",
         "modifiers":
         [
@@ -207,7 +207,7 @@
       },
       {
         "loot": true,
-        "name": "Spellbook",
+        "name": "spellbook",
         "modifiers":
         [
           {
@@ -223,8 +223,8 @@
     ]
   },
   {
-    "name": "Large Rat",
-    "description": "A rabid rat, the size of a smaller dog.",
+    "name": "large rat",
+    "description": "rabid rat, the size of a smaller dog",
     "stats":
     {
       "ATHLETICS":    2,
@@ -234,7 +234,7 @@
     "gear":
     [
       {
-        "name": "Bite",
+        "name": "bite",
         "aptitude": "ATHLETICS",
         "modifiers":
         [
@@ -248,8 +248,8 @@
     ]
   },
   {
-    "name": "Wolf",
-    "description": "A feral wolf, with dark fur.",
+    "name": "wolf",
+    "description": "feral wolf, with dark fur",
     "stats":
     {
       "ATHLETICS":    2,
@@ -259,7 +259,7 @@
     "gear":
     [
       {
-        "name": "Claws",
+        "name": "claws",
         "aptitude": "ATHLETICS",
         "modifiers":
         [
@@ -273,8 +273,8 @@
     ]
   },
   {
-    "name": "Bear",
-    "description": "A feral bear, with brown fur.",
+    "name": "bear",
+    "description": "feral bear, with brown fur",
     "stats":
     {
       "ATHLETICS":    4,
@@ -284,7 +284,7 @@
     "gear":
     [
       {
-        "name": "Claws",
+        "name": "claws",
         "aptitude": "ATHLETICS",
         "modifiers":
         [
