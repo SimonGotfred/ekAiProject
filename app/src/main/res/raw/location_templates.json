@@ -28,13 +28,13 @@
     "maxPaths": 6
   },
   {
-    "name": "mess hall",
+    "name": "gloomy mess hall",
     "description": "",
     "minPaths": 2,
     "maxPaths": 6
   },
   {
-    "name": "room with a water well",
+    "name": "room with a corrupted well",
     "description": "",
     "minPaths": 1,
     "maxPaths": 3
