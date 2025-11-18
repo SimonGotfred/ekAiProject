@@ -1,6 +1,8 @@
 [
   {
     "name": "Hallway",
-    "description": "A clammy hallway, walled with massive roughly cut stone bricks."
+    "description": "A clammy hallway, walled with massive roughly cut stone bricks.",
+    "minAdjoining": 2,
+    "maxAdjoining": 6
   }
 ]

@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity
         textView   = findViewById(R.id.TextWindow);
         resources  = getResources();
 
-        try {game = new GameEngine(this, resources.openRawResource(R.raw.character_templates));}
+        try {game = new GameEngine(this, resources.openRawResource(R.raw.character_templates), resources.openRawResource(R.raw.location_templates));}
         catch (Exception e) {throw new RuntimeException(e);}
     }
 

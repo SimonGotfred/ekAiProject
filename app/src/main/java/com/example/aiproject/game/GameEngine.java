@@ -26,10 +26,8 @@ import static com.example.aiproject.game.character.Stat.*;
 
 public class GameEngine implements AiService
 {
-    private final boolean   useAi = true;
+    private final boolean   useAi = false;
     private final MainActivity ui;
-
-    private void  prompt() {prompt(promptInstructions + text); clearText();}
 
     private void  clearText(){text.setLength(0);}
     private void  newText(String text, Object... objects) {clearText(); addText(text, objects);}
@@ -38,10 +36,6 @@ public class GameEngine implements AiService
 
     // following strings should *probably* be imported through resources
     //
-    public  final static String promptInstructions =
-       "Dramatically describe how the following scene plays out in 2-4 sentences using present tense, "
-     + "always refer to the player as 'you', and do NOT mention specific numbers or stats:\n";
-
     public  final static String paragraphAccent =
        "⊱⟢༻"
      + "                                         "
@@ -63,10 +57,19 @@ public class GameEngine implements AiService
      + "<br>"+MAGIC.icon +"<i>Magic</i> depends on your <i>Willpower</i>."
      + "</p>";
 
+    public  final static String promptInstructions =
+            "Dramatically describe how the following scene plays out in 2-4 sentences using present tense, " +
+            "always refer to the player as 'you', and do NOT mention specific numbers or stats.\n";
+
+    public  final static String scenePrompt =
+            "The scene takes place in %s with %d exits, and involves %s%s. " +
+            "Feel free to involve any supposed elements from the environment\n";
+
     // initialized in constructor in order to set 'ui' first, otherwise would be made static
     private final Option RESTART;
     private final Option PROCEED;
     private final Option LOOTING;
+    private final Location  EXIT;
 
     // list of completed combat-rounds, logged for... *prosperity*
     private final LinkedHashMap<Turn,Turn> rounds = new LinkedHashMap<>();
@@ -94,7 +97,8 @@ public class GameEngine implements AiService
         loadLocations(locationResource);
         loadCharacters(charResource);
 
-        newPlayerTemplate = charTemplates.remove(0);    // separate player template from other characters.
+        EXIT = locationTemplates.remove(0);                  // separate special 'static' location *EXIT* to only put at the start of each newly generated dungeon
+        newPlayerTemplate = charTemplates.remove(0);         // separate player template from other characters.
         lootTable.addAll(charTemplates.remove(0).getGear()); // extract loot-table, and discard Loot-Bug template.
 
         print(introText);
@@ -105,9 +109,14 @@ public class GameEngine implements AiService
     private void setupNewGame()
     {
         player    = newPlayer();
+        location  = newLocation();
         adversary = newAdversary();
 
-        newText("%s enters a dungeon and encounters a %s, bent on fighting them.",
+        Location.current = location;
+        Location.current . addPath(EXIT);
+
+        newText(scenePrompt,location.getDescription(),location.getAdjoined().size());
+        newText("%s enters the dungeon and encounters a %s, bent on fighting them.",
                 player.getName(), adversary.getName());
     }
 
@@ -124,7 +133,7 @@ public class GameEngine implements AiService
                 options.add(LOOTING);
                 LOOTING.setText("Loot the " + adversary.getName());
             }
-            options.add(PROCEED);
+            for (Location location : location.getAdjoined().keySet()) options.add(buildOption(location));
         }
         else for (Gear gear : player.getActions()) options.add(buildOption(gear)); // options for being in combat
         return options;
@@ -137,7 +146,7 @@ public class GameEngine implements AiService
             clearOptions();   // not actually a switch - because old systems don't support *switch(Object)*
             lastRound = null; // todo: so far 'rounds' only refer to combat, thus toss last round - it'll be set again when applicable
             if      (option.equals(RESTART)) setupNewGame();
-            else if (option.equals(PROCEED)) resolveTravel(option.gear);
+            else if (location.getAdjoined() .containsKey(option.gear)) resolveTravel((Location) option.gear);
             else if (option.equals(LOOTING)) resolveLoot(adversary);
             else     resolveCombat(option.gear); // default assumption for option is "combat", as the variety of combat-options is expansive
             if (useAi) prompt(); // prompt the ai service for a dramatization when actions have been resolved
@@ -159,11 +168,12 @@ public class GameEngine implements AiService
         rounds.entrySet().iterator().forEachRemaining(round -> lastRound = round); // 'getLast()' don't exist on old systems
     }
 
-    public void resolveTravel(Gear gear)
+    public void resolveTravel(Location location)
     {
+        Location.current = this.location = location;
         adversary = newAdversary();
-        newText("%s ventures deeper into the dungeon, encountering a %s in the next room, bent on fighting them.",
-                player.getName(), adversary.getName());
+        newText("%s steps into the %s, encountering a %s, bent on fighting them.",
+                player.getName(), location.getName(), adversary.getName());
     }
 
     public void resolveCombat(Gear gear)
@@ -194,10 +204,21 @@ public class GameEngine implements AiService
         text.deleteCharAt(text.length()-1).append('.');
     }
 
-    private Player    newPlayer()    {player = new Player(newPlayerTemplate); return player;}
-    private Character newAdversary()
+    private Player    newPlayer() {player = new Player(newPlayerTemplate); return player;}
+    private Location  newLocation()
     {
-        Character adversary = new Character(charTemplates.getRandom());
+        Location location = new Location(new RollableList<>(locationTemplates.stream().filter(template -> template.getMinPaths() > 1).collect(Collectors.toList())).getRandom());
+        location.generateFull();
+        if (location.getAdjoined().size()<location.getMinPaths()) location.generatePaths(locationTemplates);
+        if (location.getCharacters()==null) location.generateCharacters(charTemplates);
+        if (location.getGear()==null)       location.generateLoot      (lootTable);
+        // todo: characters and loot should be allowed to be empty!
+        return location;
+    }
+
+    private Character newAdversary() // todo: deprecate
+    {
+        Character adversary = location.getCharacters().getRandom();
         adversary.add(lootTable.getRandom());
         return adversary;
     }
@@ -220,8 +241,9 @@ public class GameEngine implements AiService
         return text.toString().trim();
     }
 
-    public void onServiceException(Throwable e){recover(e);}
-    public void onServiceResponse(Response response)
+        // AI Hooks \\
+    private void prompt() {prompt(promptInstructions + text);}
+    public  void onServiceResponse(Response response)
     {
         try
         {
@@ -233,6 +255,20 @@ public class GameEngine implements AiService
             refreshOptions();
         }
         catch (Throwable e) {recover(e);} // catch anything the a̶i̶ my service f**ks up
+    }
+
+    public  void onServiceException(Throwable e)
+    {
+        try
+        {
+            String s = text.toString();
+            newText("<h6 style=\"text-align: center\">%s<br>%s</h6>"
+                    + "<p>%s</p>"
+                    + "<p>%s</p>", statBar(), paragraphAccent, s, result());
+            print(text.toString());
+            refreshOptions();
+        }
+        catch (Throwable e2) {recover(e2);} // catch anything the a̶i̶ my service f**ks up
     }
 
     private void recover(Throwable e)

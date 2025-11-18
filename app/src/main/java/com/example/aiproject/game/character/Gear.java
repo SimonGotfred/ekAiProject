@@ -12,18 +12,19 @@ import lombok.Getter;
 import static com.example.aiproject.game.character.Stat.*;
 
 @Getter
-public class Gear
+public class Gear // todo: separate "Action" from "Gear"
 {
-    private static final StringBuilder text = new StringBuilder();
-    private static void  clearText () {text.setLength(0);}
-    private static void  newText   (String text, Object... objects) {clearText(); addText(text, objects);}
-    private static void  addText   (String text, Object... objects) {Gear.text.append(String.format(text, objects));}
+    protected static final StringBuilder text = new StringBuilder();
+    protected static void  clearText () {text.setLength(0);}
+    protected static void  newText   (String text, Object... objects) {clearText(); addText(text, objects);}
+    protected static void  addText   (String text, Object... objects) {Gear.text.append(String.format(text, objects));}
 
-    private String         name;
-    private Stat           aptitude;
-    private List<Modifier> modifiers = new ArrayList<>();
-    private short          duration  = 0;
-    private boolean        loot      = false; // todo: should maybe depend on whether having GOLD modifiers?
+    protected String         name;
+    protected String         description;
+    protected Stat           aptitude;
+    protected List<Modifier> modifiers = new ArrayList<>();
+    protected short          duration  = 0;
+    protected boolean        loot      = false; // todo: should maybe depend on whether having GOLD modifiers?
 
     public Gear(String name, Modifier... modifiers) {this(name,VIGOR);aptitude=null;}
     public Gear(String name, Stat aptitude, Modifier... modifiers)

@@ -3,6 +3,7 @@ package com.example.aiproject.ai;
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.ConnectException;
@@ -68,7 +69,7 @@ public interface AiService
                     responses.put(message,response);
                     onServiceResponse(response);
                 }
-                catch (Exception e)
+                catch (Throwable e)
                 {
                     // close connection before letting 'client' spend time handling exception.
                     if (connection != null) connection.disconnect();
