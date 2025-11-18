@@ -9,25 +9,23 @@ import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 
 import static com.example.aiproject.ai.ApiKey.*;
 
-public interface Service
+public interface AiService
 {
     // url instanced as array to let interface's *final* value be "instanced" after interface initialization.
     // this is because exceptions, eg. caused by URL instantiation, cannot be caught during interface initialization.
     URL[] url = new URL[]{null};
 
+    // list of API correspondence, logged for... *prosperity*
     LinkedHashMap<Message, Response> responses = new LinkedHashMap<>();
 
-            void onServiceResponse (Response response);
-    default void onServiceException(Exception exception){throw new RuntimeException(exception);}
+    void onServiceResponse (Response response);
+    void onServiceException(Throwable e);
 
     default Thread prompt(String prompt)
     {

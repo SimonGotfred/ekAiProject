@@ -3,7 +3,7 @@ package com.example.aiproject.game;
 import com.example.aiproject.MainActivity;
 
 import com.example.aiproject.ai.Response;
-import com.example.aiproject.ai.Service;
+import com.example.aiproject.ai.AiService;
 
 import com.example.aiproject.game.character.Character;
 import com.example.aiproject.game.character.Player;
@@ -23,16 +23,20 @@ import java.util.stream.Collectors;
 
 import static com.example.aiproject.game.character.Stat.*;
 
-public class GameEngine implements Service
+public class GameEngine implements AiService
 {
     private final boolean   useAi = true;
     private final MainActivity ui;
 
+    private void  prompt() {prompt(promptInstructions + text); clearText();}
+
     private void  clearText(){text.setLength(0);}
     private void  newText(String text, Object... objects) {clearText(); addText(text, objects);}
     private void  addText(String text, Object... objects) {this.text.append(String.format(text,objects));}
-    private void  prompt(){prompt(promptInstructions + text); clearText();}
-    private final StringBuilder text      = new StringBuilder();
+    private final StringBuilder text = new StringBuilder();
+
+    // following strings should *probably* be imported through resources
+    //
     public  final static String promptInstructions =
        "Dramatically describe how the following scene plays out in 2-4 sentences using present tense, "
      + "always refer to the player as 'you', and do NOT mention specific numbers or stats:\n";
@@ -58,17 +62,21 @@ public class GameEngine implements Service
      + "<br>"+MAGIC.icon +"<i>Magic</i> depends on your <i>Willpower</i>."
      + "</p>";
 
+    // initialized in constructor in order to set 'ui' first, otherwise would be made static
     private final Option RESTART;
     private final Option PROCEED;
     private final Option LOOTING;
 
+    // list of completed combat-rounds, logged for... *prosperity*
     private final LinkedHashMap<Turn,Turn> rounds = new LinkedHashMap<>();
     private       Entry<Turn,Turn>         lastRound;
 
+    // templates and base game elements, to be referenced by or copied into an active game.
     private final RollableList<Gear>      loot      = new RollableList<>();
     private final RollableList<Character> templates = new RollableList<>();
-
     private final Character newPlayerTemplate;
+
+    // game elements present in currently active game
     private       Character adversary;
     private       Player    player;
 
@@ -200,7 +208,7 @@ public class GameEngine implements Service
         return text.toString().trim();
     }
 
-    @Override
+    public void onServiceException(Throwable e){recover(e);}
     public void onServiceResponse(Response response)
     {
         try
