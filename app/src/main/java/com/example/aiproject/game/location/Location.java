@@ -20,6 +20,7 @@ public class Location extends Gear
     public static Location current; // todo: better solution
 
     Location template;
+    Environment environment;
     int minPaths, maxPaths;
     HashMap<Location,Direction> adjoined = new HashMap<>();
     RollableList<Character>     characters;
@@ -65,7 +66,8 @@ public class Location extends Gear
         for (int i = RandomSuite.getInt(minPaths, maxPaths) - adjoined.size(); i > 0; i--)
         {
             if (availableDirections.isEmpty()) return list;
-            list.add(this.addPath(new Location(possiblePaths.getRandom()),availableDirections.removeRandom()));
+            list.add(0,this.addPath(new Location(possiblePaths.getRandom()),availableDirections.removeRandom()));
+            list.get(0).setEnvironment(environment);
         }
         return list;
     }

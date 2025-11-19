@@ -246,17 +246,22 @@ public class GameEngine implements AiService
         return text.toString().trim();
     }
 
+    public void addHeader(String text)
+    {
+        newText("<h6 style=\"text-align: center\">%s<br>%s</h6>"
+                + "<p>%s</p>"
+                + "<p>%s</p>", statBar(), paragraphAccent, text, result());
+    }
+
         // AI Hooks \\
     private void prompt() {prompt(promptInstructions + text);}
     public  void onServiceResponse(Response response)
     {
         try
         {
-            String s = useAi ? response.getText() : response.getResponseId();
-            newText("<h6 style=\"text-align: center\">%s<br>%s</h6>"
-                       + "<p>%s</p>"
-                       + "<p>%s</p>", statBar(), paragraphAccent, s, result());
-            print(text.toString());
+            addHeader(useAi ? response.getText() : response.getResponseId());
+
+            print(this.text.toString());
             refreshOptions();
         }
         catch (Throwable e) {recover(e);} // catch anything the a̶i̶ my service f**ks up
@@ -266,11 +271,8 @@ public class GameEngine implements AiService
     {
         try
         {
-            String s = text.toString();
-            newText("<h6 style=\"text-align: center\">%s<br>%s</h6>"
-                    + "<p>%s</p>"
-                    + "<p>%s</p>", statBar(), paragraphAccent, s, result());
-            print(text.toString());
+            addHeader(this.text.toString());
+            print(this.text.toString());
             refreshOptions();
         }
         catch (Throwable e2) {recover(e2);} // catch anything the a̶i̶ my service f**ks up

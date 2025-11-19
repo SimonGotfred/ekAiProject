@@ -7,8 +7,15 @@ import java.util.Random;
 
 public class RollableList<T> extends ArrayList<T>
 {
-    private static final  Random r = new Random();
-    private int rIndex() {return r.nextInt(size());}
+    private static final  Random roller = new Random();
+    public static <T> T oneOf( T...   objects) {return oneOf(List.of(objects));}
+    public static <T> T oneOf(List<T> objects)
+    {
+        if (objects.isEmpty()) return null;
+        return objects.get(roller.nextInt(objects.size()));
+    }
+
+    private int roll() {return roller.nextInt(size());}
 
     public RollableList(){}
     public RollableList(T... t){this(List.of(t));} // seriously - why are these two not part of 'List' by default
@@ -20,7 +27,7 @@ public class RollableList<T> extends ArrayList<T>
     public T getRandom()
     {
         if (isEmpty()) return null;
-        return get(rIndex());
+        return get(roll());
     }
 
     public RollableList<T> getRandom(int amount) {return getRandom(amount, true);}
@@ -43,7 +50,7 @@ public class RollableList<T> extends ArrayList<T>
     public T removeRandom()
     {
         if (isEmpty()) return null;
-        return remove(rIndex());
+        return remove(roll());
     }
 
     public RollableList<T> removeRandom(int amount)
@@ -59,6 +66,6 @@ public class RollableList<T> extends ArrayList<T>
 
     @SafeVarargs public final void addRandom(T... t)
     {
-        for (T t_:t) add(rIndex(),t_);
+        for (T t_:t) add(roll(), t_);
     }
 }
