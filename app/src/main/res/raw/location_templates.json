@@ -1,0 +1,94 @@
+[
+  {
+    "name": "path out of the dungeon",
+    "description": "short passageway leading outside, pleasantly illuminated by sunlight"
+  },
+  {
+    "name": "clammy hallway",
+    "description": "clammy hallway, walled with massive roughly cut stone bricks",
+    "minPaths": 2,
+    "maxPaths": 6
+  },
+  {
+    "name": "foreboding armory",
+    "description": "",
+    "minPaths": 2,
+    "maxPaths": 6
+  },
+  {
+    "name": "grim torture room",
+    "description": "",
+    "minPaths": 2,
+    "maxPaths": 6
+  },
+  {
+    "name": "room with cages",
+    "description": "",
+    "minPaths": 2,
+    "maxPaths": 6
+  },
+  {
+    "name": "gloomy mess hall",
+    "description": "",
+    "minPaths": 2,
+    "maxPaths": 6
+  },
+  {
+    "name": "room with a corrupted well",
+    "description": "",
+    "minPaths": 1,
+    "maxPaths": 3
+  },
+  {
+    "name": "eerie cistern",
+    "description": "",
+    "minPaths": 2,
+    "maxPaths": 6
+  },
+  {
+    "name": "underground grove",
+    "description": "",
+    "minPaths": 2,
+    "maxPaths": 6
+  },
+  {
+    "name": "unholy temple",
+    "description": "",
+    "minPaths": 2,
+    "maxPaths": 6
+  },
+  {
+    "name": "sinister chantry",
+    "description": "",
+    "minPaths": 1,
+    "maxPaths": 4
+  },
+  {
+    "name": "macabre tomb",
+    "description": "",
+    "minPaths": 1,
+    "maxPaths": 4
+  },
+  {
+    "name": "decrepit barracks",
+    "description": "",
+    "minPaths": 1,
+    "maxPaths": 4
+  },
+  {
+    "name": "ominous library",
+    "description": "",
+    "minPaths": 2,
+    "maxPaths": 6
+  },
+  {
+    "name": "alchemist's study",
+    "description": "",
+    "minPaths": 1,
+    "maxPaths": 2
+  },
+  {
+    "name": "dingy bedroom",
+    "description": ""
+  }
+]
