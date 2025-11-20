@@ -1,5 +1,6 @@
 package com.example.aiproject.game.character;
 
+import com.example.aiproject.game.Action;
 import com.example.aiproject.game.Turn;
 
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ import lombok.Getter;
 import static com.example.aiproject.game.character.Stat.*;
 
 @Getter
-public class Gear // todo: separate "Action" from "Gear"
+public class Gear implements Action// todo: separate "Action" from "Gear"
 {
     protected static final StringBuilder text = new StringBuilder();
     protected static void  clearText () {text.setLength(0);}

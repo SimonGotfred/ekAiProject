@@ -27,7 +27,6 @@ public class Location extends Gear
     RollableList<Character>     characters;
     RollableList<Gear>          loot;
 
-
     public Location(Location template)
     {
         super(template.name);
