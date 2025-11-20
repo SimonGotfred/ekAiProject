@@ -9,7 +9,9 @@ import com.example.aiproject.game.character.Character;
 import com.example.aiproject.game.character.Player;
 import com.example.aiproject.game.character.Stat;
 import com.example.aiproject.game.character.Gear;
+import com.example.aiproject.game.location.Environment;
 import com.example.aiproject.game.location.Location;
+import com.example.aiproject.game.tool.Dice;
 import com.example.aiproject.game.tool.RollableList;
 
 import com.google.gson.Gson;
@@ -27,7 +29,7 @@ import static com.example.aiproject.game.character.Stat.*;
 
 public class GameEngine implements AiService
 {
-    private final boolean   useAi = false;
+    private       boolean      useAi = false;
     private final MainActivity ui;
 
     private void  clearText(){text.setLength(0);}
@@ -63,12 +65,12 @@ public class GameEngine implements AiService
             "always refer to the player as 'you', and do NOT mention specific numbers or stats.\n";
 
     public  final static String scenePrompt = "Feel free to involve any supposed elements from the environment.\n";
-    public  final static String sceneDescription = "The scene takes place in a %s with %d exits, it involves the %s%s. %s";
+    public  final static String sceneDescription = "The scene takes place in a %s, it involves the %s%s. %s";
 
 
     // initialized in constructor in order to set 'ui' first, otherwise would be made static
+    private final Option AITOGGLE;
     private final Option RESTART;
-    private final Option PROCEED;
     private final Option LOOTING;
     private final Location  EXIT;
 
@@ -91,8 +93,8 @@ public class GameEngine implements AiService
     {
         ui = mainActivity;
 
-        RESTART = buildOption("Restart"); // initialized in constructor to set 'ui' first.
-        PROCEED = buildOption("Proceed");
+        AITOGGLE = buildOption("Toggle AI"); // initialized in constructor to set 'ui' first.
+        RESTART = buildOption("Restart");
         LOOTING = buildOption("Loot");
 
         loadLocations(locationResource);
@@ -102,6 +104,7 @@ public class GameEngine implements AiService
         lootTable.addAll(charTemplates.remove(0).getGear()); // extract loot-table, and discard Loot-Bug template.
         EXIT = locationTemplates.remove(0);                  // separate special 'static' location *EXIT* to only put at the start of each newly generated dungeon
         EXIT.setAdjoined(new HashMap<>());
+        EXIT.setEnvironment(Dice.oneOf(Environment.values()));
         Location.current = location = EXIT;
 
         print(introText);
@@ -134,6 +137,7 @@ public class GameEngine implements AiService
             for (Location location : location.getAdjoined().keySet()) options.add(buildOption(location));
         }
         else for (Gear gear : player.getActions()) options.add(buildOption(gear)); // options for being in combat
+        //options.add(AITOGGLE);
         return options;
     }
 
@@ -141,10 +145,10 @@ public class GameEngine implements AiService
     {                                       // not actually a switch - because old systems don't support *switch(Object)*
         try /// note: that it is possible to have non-API options by returning from function before 'prompt()' - just remember to print!
         {
-            clearText();
-            if (!option.equals(RESTART)) describeScene();
+            if (!(option.equals(RESTART)||option.equals(AITOGGLE))) describeScene();
             lastRound = null; // todo: so far 'rounds' only refer to combat, thus toss last round - it'll be set again when applicable
-            if      (option.equals(RESTART)) setupNewGame();
+            if      (option.equals(AITOGGLE)) useAi = !useAi;
+            else if (option.equals(RESTART))  setupNewGame();
             else if (location.getAdjoined() .containsKey(option.gear)) resolveTravel((Location) option.gear);
             else if (option.equals(LOOTING)) resolveLoot(adversary);
             else     resolveCombat(option.gear); // default assumption for option is "combat", as the variety of combat-options is expansive
@@ -207,9 +211,8 @@ public class GameEngine implements AiService
 
     public String describeScene()
     {
-        newText(sceneDescription, location.getDescription(),
-                location.getAdjoined().size(), player.toString(),
-                " and a "+adversary.toString(),scenePrompt);
+        newText(sceneDescription, location.toString(),
+                player.toString()," and a "+adversary.toString(),scenePrompt);
         return text.toString();
     }
 
@@ -218,6 +221,7 @@ public class GameEngine implements AiService
     {
         Location location = new Location(new RollableList<>(locationTemplates.stream().filter(template -> template.getMinPaths() > 1).collect(Collectors.toList())).getRandom());
         location.addPath(path);
+        location.setEnvironment(path.getEnvironment());
         return location;
     }
 

@@ -1,34 +1,26 @@
 package com.example.aiproject.game.character;
 
 import com.example.aiproject.game.tool.Dice;
+import com.example.aiproject.game.tool.DiceRoll;
 
 import androidx.annotation.NonNull;
 import lombok.Getter;
 
 @Getter
-public class Modifier
+public class Modifier extends DiceRoll
 {
-    private int  rolls =1, modifier, result;
-    private Dice dice;
     private Stat stat;
 
     public Modifier(int rolls, Dice dice) // beware! only meant for characters base roll!
     {
-        this.rolls = rolls;
-        this.dice  = dice;
+        super(rolls,dice);
     }
 
-    public int rollValue()
+    public int roll(Stat stat, int modifier)
     {
-        if (dice == null) return modifier + rolls; // ssh... it just works... xD
-        result = dice.roll(rolls);
-        return result + modifier;
-    }
-
-    public int rollValue(Stat stat, int modifier)
-    {
-        this.stat = stat;this.modifier = modifier;
-        return rollValue();
+        this.stat     = stat;
+        this.modifier = modifier;
+        return roll();
     }
 
     public  String template() {return template("");}

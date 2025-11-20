@@ -6,6 +6,7 @@ import static com.example.aiproject.game.tool.Dice.*;
 import com.example.aiproject.game.RandomSuite;
 import com.example.aiproject.game.character.Gear;
 import com.example.aiproject.game.character.Character;
+import com.example.aiproject.game.tool.Dice;
 import com.example.aiproject.game.tool.RollableList;
 
 import lombok.Getter;
@@ -32,8 +33,10 @@ public class Location extends Gear
         super(template.name);
         this.template    = template;
         this.description = template.description;
+        this.environment = template.environment;
         this.minPaths    = template.minPaths;
         this.maxPaths    = template.maxPaths;
+        this.description += description.isEmpty() ? "" : ' ';
     }
 
     public boolean hasGenerated(){return template==null;}
@@ -67,7 +70,7 @@ public class Location extends Gear
         {
             if (availableDirections.isEmpty()) return list;
             list.add(0,this.addPath(new Location(possiblePaths.getRandom()),availableDirections.removeRandom()));
-            list.get(0).setEnvironment(environment);
+            list.get(0).setEnvironment(Dice.chance(90) ? environment : Dice.oneOf(Environment.values()));
         }
         return list;
     }
@@ -93,8 +96,9 @@ public class Location extends Gear
         return new RollableList<>();
     }
 
-    public String toString()
+    public String toString() {return description + environment.name().toLowerCase() +' '+ name;}
+    public String getDescription()
     {
-        return Optional.ofNullable(adjoined.getOrDefault(current, DOWNSTAIRS)).orElse(DOWNSTAIRS).opposite().name().toLowerCase() + " towards a " + name;
+        return Optional.ofNullable(adjoined.getOrDefault(current, DOWNSTAIRS)).orElse(DOWNSTAIRS).opposite().name().toLowerCase() + " to a " +  this.toString();
     }
 }

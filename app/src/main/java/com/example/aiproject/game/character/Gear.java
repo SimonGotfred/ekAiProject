@@ -73,7 +73,7 @@ public class Gear // todo: separate "Action" from "Gear"
                                                           modifier.getStat().equals(MELEE)||
                                                           modifier.getStat().equals(RANGED)||
                                                           modifier.getStat().equals(MAGIC)).collect(Collectors.toList()))
-            {damage += mod.rollValue();dice+="+ "+mod.result(false);}
+            {damage += mod.roll();dice+= "+ " + mod.result(false);}
 
             subject.increase(FATIGUE, damage);
 

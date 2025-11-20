@@ -4,80 +4,80 @@
     "description": "short passageway leading outside, pleasantly illuminated by sunlight"
   },
   {
-    "name": "clammy hallway",
-    "description": "clammy hallway, walled with massive roughly cut stone bricks",
+    "name": "hallway",
+    "description": "clammy",
     "minPaths": 2,
     "maxPaths": 6
   },
   {
-    "name": "foreboding armory",
-    "description": "",
+    "name": "armory",
+    "description": "foreboding",
     "minPaths": 2,
     "maxPaths": 6
   },
   {
-    "name": "grim torture room",
-    "description": "",
+    "name": "torture chamber",
+    "description": "grim",
     "minPaths": 2,
     "maxPaths": 6
   },
   {
-    "name": "room with cages",
-    "description": "",
+    "name": "hall with cages",
+    "description": "ominous",
     "minPaths": 2,
     "maxPaths": 6
   },
   {
-    "name": "gloomy mess hall",
-    "description": "",
+    "name": "mess hall",
+    "description": "gloomy",
     "minPaths": 2,
     "maxPaths": 6
   },
   {
-    "name": "room with a corrupted well",
+    "name": "chamber with a corrupted well",
     "description": "",
     "minPaths": 1,
     "maxPaths": 3
   },
   {
-    "name": "eerie cistern",
-    "description": "",
+    "name": "cistern",
+    "description": "eerie",
     "minPaths": 2,
     "maxPaths": 6
   },
   {
-    "name": "underground grove",
-    "description": "",
+    "name": "grove",
+    "description": "overgrown",
     "minPaths": 2,
     "maxPaths": 6
   },
   {
-    "name": "unholy temple",
-    "description": "",
+    "name": "temple",
+    "description": "unholy",
     "minPaths": 2,
     "maxPaths": 6
   },
   {
-    "name": "sinister chantry",
-    "description": "",
+    "name": "chantry",
+    "description": "sinister",
     "minPaths": 1,
     "maxPaths": 4
   },
   {
-    "name": "macabre tomb",
-    "description": "",
+    "name": "tomb",
+    "description": "macabre",
     "minPaths": 1,
     "maxPaths": 4
   },
   {
-    "name": "decrepit barracks",
-    "description": "",
+    "name": "barracks",
+    "description": "decrepit",
     "minPaths": 1,
     "maxPaths": 4
   },
   {
-    "name": "ominous library",
-    "description": "",
+    "name": "library",
+    "description": "ominous",
     "minPaths": 2,
     "maxPaths": 6
   },
@@ -88,7 +88,7 @@
     "maxPaths": 2
   },
   {
-    "name": "dingy bedroom",
-    "description": ""
+    "name": "dormitory",
+    "description": "dingy"
   }
 ]

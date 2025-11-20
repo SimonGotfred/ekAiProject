@@ -11,7 +11,8 @@
     "gear":
     [
       {
-        "name": "rusty sword",
+        "isLoot": true,
+        "name": "heirloom sword",
         "aptitude": "ATHLETICS",
         "modifiers":
         [
@@ -23,7 +24,7 @@
         ]
       },
       {
-        "loot": true,
+        "isLoot": true,
         "name": "health potion",
         "aptitude": "VIGOR",
         "duration": 1,
@@ -45,7 +46,7 @@
     "gear":
     [
       {
-        "loot": true,
+        "isLoot": true,
         "name": "heavy helmet",
         "modifiers":
         [
@@ -60,7 +61,7 @@
         ]
       },
       {
-        "loot": true,
+        "isLoot": true,
         "name": "health potion",
         "aptitude": "VIGOR",
         "duration": 1,
@@ -75,7 +76,7 @@
         ]
       },
       {
-        "loot": true,
+        "isLoot": true,
         "name": "gold pouch",
         "duration": 1,
         "modifiers":
@@ -139,7 +140,7 @@
         ]
       },
       {
-        "loot": true,
+        "isLoot": true,
         "name": "cumbersome chainmail",
         "modifiers":
         [
@@ -167,7 +168,7 @@
     "gear":
     [
       {
-        "loot": true,
+        "isLoot": true,
         "name": "shortbow",
         "aptitude": "INTELLIGENCE",
         "modifiers":
@@ -206,7 +207,7 @@
         ]
       },
       {
-        "loot": true,
+        "isLoot": true,
         "name": "spellbook",
         "modifiers":
         [

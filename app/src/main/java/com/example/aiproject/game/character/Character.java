@@ -2,10 +2,8 @@ package com.example.aiproject.game.character;
 
 import com.example.aiproject.game.Turn;
 import com.example.aiproject.game.tool.Dice;
-import com.example.aiproject.game.RandomSuite;
 import com.example.aiproject.game.tool.RollableList;
 
-import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Optional;
@@ -32,7 +30,7 @@ public class Character
         this.stats        . putIfAbsent(FATIGUE,0);
     }
 
-    public int    roll(Stat aptitude)               {return baseRoll.rollValue(aptitude, getStat(aptitude));}
+    public int    roll(Stat aptitude)               {return baseRoll.roll(aptitude, getStat(aptitude));}
     public String result()                          {return baseRoll.result(false);}
 
     public Gear act()                               {return this.getActions().getRandom();}
@@ -88,7 +86,7 @@ public class Character
         stats.put(aptitude, Math.max(rawStat(aptitude)+amount,0));
     }
 
-    public void increase(Modifier... modifier) {for (Modifier m : modifier) increase(m.getStat(), m.rollValue());}
+    public void increase(Modifier... modifier) {for (Modifier m : modifier) increase(m.getStat(), m.roll());}
     public void apply(Modifier... modifier)    {this.add(new Gear("Condition", modifier));}
     public void add(Gear... gear)              {this.gear.addAll(List.of(gear));}
     public void remove(Gear... gear)           {this.gear.removeAll(List.of(gear));}
@@ -103,9 +101,6 @@ public class Character
         }
     }
 
-    public String getName(){return "the "+name;}
-    public String toString()
-    {
-        return name;
-    }
+    public String getName() {return "the "+name;}
+    public String toString(){return description+' '+name;}
 }
